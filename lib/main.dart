@@ -94,7 +94,7 @@ class Polygon extends ClipPath{
     child: Container(
               color: color,
               width: window.physicalSize.width,
-              height: window.physicalSize.width,
+              height: window.physicalSize.height,
             ),
     );
 }
