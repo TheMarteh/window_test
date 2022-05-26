@@ -31,12 +31,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Polygon> polys = [Polygon(Point(30.0, 60.0), Point(40.0, 90.0), Point(10.0, 100.0), Colors.black26),
-  Polygon(Point(90.0, 60.0), Point(50.0, 90.0), Point(10.0, 100.0), Colors.black)];
+  List<Polygon> polys = [];
 
   void _addTriangle() {
     setState(() {
-      polys.add(Polygon(Point(Random.secure().nextDouble() * 300,Random.secure().nextDouble()* 300), Point(Random.secure().nextDouble()* 300,Random.secure().nextDouble()* 300), Point(Random.secure().nextDouble()* 300,Random.secure().nextDouble()* 300), Colors.black45));
+      polys.add(Polygon(
+        Point(Random.secure().nextDouble() * window.physicalSize.width,Random.secure().nextDouble() * window.physicalSize.height), 
+        Point(Random.secure().nextDouble() * window.physicalSize.width,Random.secure().nextDouble() * window.physicalSize.height),
+        Point(Random.secure().nextDouble() * window.physicalSize.width,Random.secure().nextDouble() * window.physicalSize.height), 
+        Colors.black45));
     });
   }
 
