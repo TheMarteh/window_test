@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:window_test/Logic/Cube.dart';
+import 'package:window_test/Logic/ObjConverter.dart';
 import 'package:window_test/Logic/Renderer.dart';
 
 void main() {
@@ -35,6 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // List<Polygon> polys = [];
   List<Offset> pointsToDraw = [];
   double time = 100.0;
+  ObjConverter o = ObjConverter("lib\\assets\\teapot.obj");
 
   // Stopwatch s = Stopwatch();
 
@@ -50,6 +52,8 @@ class _MyHomePageState extends State<MyHomePage> {
     Timer _timer = Timer.periodic(Duration(milliseconds: 16), (Timer t) {
       tick();
     });
+
+    o.getMesh();
   }
 
   @override
@@ -71,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void tick() {
-    print("Tick");
+    // print("Tick");
     setState(() {
       time++;
     });
