@@ -47,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // s.start();
     // List<ProjectedTriangle> trisToDraw = Renderer().project(Cube.MeshCube);
 
-    Timer _timer = Timer.periodic(Duration(milliseconds: 500), (Timer t) {
+    Timer _timer = Timer.periodic(Duration(milliseconds: 16), (Timer t) {
       tick();
     });
   }
@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: tick,
-        tooltip: 'Increment',
+        tooltip: 'Loop',
         child: const Icon(Icons.add),
       ),
     );

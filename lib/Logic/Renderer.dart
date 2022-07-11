@@ -192,7 +192,7 @@ class ProjectedTriangle {
 class TrisPainter extends CustomPainter {
   //         <-- CustomPainter class
   final List<ProjectedTriangle> trisToDraw;
-  TrisPainter(this.trisToDraw);
+  TrisPainter(this.trisToDraw) : super(repaint: DrawingController());
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
@@ -211,6 +211,15 @@ class TrisPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomPainter old) {
-    return false;
+    return true;
+  }
+}
+
+class DrawingController extends ChangeNotifier {
+  double time = 0.0;
+
+  void add() {
+    time += 1.0;
+    notifyListeners();
   }
 }
