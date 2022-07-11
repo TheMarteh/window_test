@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
@@ -33,14 +34,22 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   // List<Polygon> polys = [];
   List<Offset> pointsToDraw = [];
-  late List<ProjectedTriangle> trisToDraw = Renderer().project(Cube.MeshCube);
+  double time = 100.0;
+
+  // Stopwatch s = Stopwatch();
+
+  // late List<ProjectedTriangle> trisToDraw = Renderer().project(Cube.MeshCube);
 
   @override
   void initState() {
     super.initState();
     // projection matrix
-
+    // s.start();
     // List<ProjectedTriangle> trisToDraw = Renderer().project(Cube.MeshCube);
+
+    Timer _timer = Timer.periodic(Duration(milliseconds: 500), (Timer t) {
+      tick();
+    });
   }
 
   @override
@@ -51,14 +60,21 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: CustomPaint(
         size: Size(900, 900),
-        painter: TrisPainter(trisToDraw),
+        painter: TrisPainter(Renderer().project(Cube().MeshCube, time / 20)),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => {},
+        onPressed: tick,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  void tick() {
+    print("Tick");
+    setState(() {
+      time++;
+    });
   }
 }
 

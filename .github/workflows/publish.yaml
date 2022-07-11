@@ -1,0 +1,26 @@
+name: Gh-Pages
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build-test-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2 # Only works with v2
+      - uses: subosito/flutter-action@v1
+      - name: Installing ⚙️​
+        run: flutter pub get
+
+      - name: Testing 🧪​
+        run: flutter test
+
+      - name: Building 🛠️
+        run: flutter build web --release --web-renderer canvaskit
+      
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build/web # The folder the action should deploy.

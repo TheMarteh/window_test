@@ -1,7 +1,7 @@
 import 'package:window_test/Logic/Renderer.dart';
 
 class Cube {
-  static Mesh MeshCube = Mesh([
+  Mesh MeshCube = Mesh([
     // South
     Triangle(Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 1.0, 0.0), Vec3D(1.0, 1.0, 0.0)),
     Triangle(Vec3D(0.0, 0.0, 0.0), Vec3D(1.0, 1.0, 0.0), Vec3D(1.0, 0.0, 0.0)),

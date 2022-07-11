@@ -5,19 +5,19 @@ import 'package:flutter/material.dart';
 
 class Renderer {
   Vec3D multiplyMatrixVector(Vec3D i, Vec3D o, Mat4x4 m) {
-    print("Before multiplication: " + i.x.toString());
+    // print("Before multiplication: " + i.x.toString());
     double x = i.x.toDouble();
     double y = i.y.toDouble();
     double z = i.z.toDouble();
 
     o.x = (i.x * m.m[0][0]) + (i.y * m.m[1][0]) + (i.z * m.m[2][0]) + m.m[3][0];
-    print("After o.x: " + i.x.toString());
+    // print("After o.x: " + i.x.toString());
 
     o.y = (i.x * m.m[0][1]) + (i.y * m.m[1][1]) + (i.z * m.m[2][1]) + m.m[3][1];
     o.z = (i.x * m.m[0][2]) + (i.y * m.m[1][2]) + (i.z * m.m[2][2]) + m.m[3][2];
 
-    print("After multiplication: " + i.x.toString());
-    print("After testing: " + i.x.toString());
+    // print("After multiplication: " + i.x.toString());
+    // print("After testing: " + i.x.toString());
 
     double w =
         (i.x * m.m[0][3]) + (i.y * m.m[1][3]) + (i.z * m.m[2][3]) + m.m[3][3];
@@ -29,7 +29,7 @@ class Renderer {
     return Vec3D(x, y, z);
   }
 
-  List<ProjectedTriangle> project(Mesh mesh) {
+  List<ProjectedTriangle> project(Mesh mesh, double time) {
     List<ProjectedTriangle> trisToDraw = [];
     Mat4x4 matProj = Mat4x4();
     double fNear = 0.1;
@@ -48,20 +48,53 @@ class Renderer {
     Mat4x4 matRotZ = Mat4x4();
     Mat4x4 matRotX = Mat4x4();
 
+    double fTheta = 1.0 * time;
+
+    // Rotation Z
+    matRotZ.m[0][0] = cos(fTheta);
+    matRotZ.m[0][1] = sin(fTheta);
+    matRotZ.m[1][0] = -sin(fTheta);
+    matRotZ.m[1][1] = cos(fTheta);
+    matRotZ.m[2][2] = 1;
+    matRotZ.m[3][3] = 1;
+
+    // Rotation X
+    matRotX.m[0][0] = 1;
+    matRotX.m[1][1] = cos(fTheta * 0.5);
+    matRotX.m[1][2] = sin(fTheta * 0.5);
+    matRotX.m[2][1] = -sin(fTheta * 0.5);
+    matRotX.m[2][2] = cos(fTheta * 0.5);
+    matRotX.m[3][3] = 1;
+
     for (Triangle tri in mesh.tris) {
       Triangle triToWorkWith = tri;
-      Triangle triProjected;
-      Triangle triTranslated;
+      Triangle triProjected = Triangle(
+          Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0));
+      Triangle triTranslated = Triangle(
+          Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0));
 
-      // Triangle triRotatedZ;
-      // Triangle triRotatedZX;
+      Triangle triRotatedZ = Triangle(
+          Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0));
+      Triangle triRotatedZX = Triangle(
+          Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0));
 
-      triProjected = triToWorkWith;
+      // triProjected = triToWorkWith;
+      // triRotatedZ = triToWorkWith;
 
-      triTranslated = triToWorkWith;
-      triTranslated.arr[0].z = triToWorkWith.arr[0].z + 3.0;
-      triTranslated.arr[1].z = triToWorkWith.arr[1].z + 3.0;
-      triTranslated.arr[2].z = triToWorkWith.arr[2].z + 3.0;
+      multiplyMatrixVector(triToWorkWith.arr[0], triRotatedZ.arr[0], matRotZ);
+      multiplyMatrixVector(triToWorkWith.arr[1], triRotatedZ.arr[1], matRotZ);
+      multiplyMatrixVector(triToWorkWith.arr[2], triRotatedZ.arr[2], matRotZ);
+
+      // triRotatedZX = triRotatedZ;
+
+      multiplyMatrixVector(triRotatedZ.arr[0], triRotatedZX.arr[0], matRotX);
+      multiplyMatrixVector(triRotatedZ.arr[1], triRotatedZX.arr[1], matRotX);
+      multiplyMatrixVector(triRotatedZ.arr[2], triRotatedZX.arr[2], matRotX);
+
+      triTranslated = triRotatedZX;
+      triTranslated.arr[0].z = triRotatedZX.arr[0].z + 3.0;
+      triTranslated.arr[1].z = triRotatedZX.arr[1].z + 3.0;
+      triTranslated.arr[2].z = triRotatedZX.arr[2].z + 3.0;
 
       multiplyMatrixVector(triTranslated.arr[0], triProjected.arr[0], matProj);
       multiplyMatrixVector(triTranslated.arr[1], triProjected.arr[1], matProj);
