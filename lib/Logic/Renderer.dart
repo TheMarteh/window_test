@@ -59,23 +59,19 @@ class Renderer {
 
     // Rotation X
     matRotX.m[0][0] = 1;
-    matRotX.m[1][1] = cos(fTheta * 0.5);
-    matRotX.m[1][2] = sin(fTheta * 0.5);
-    matRotX.m[2][1] = -sin(fTheta * 0.5);
-    matRotX.m[2][2] = cos(fTheta * 0.5);
+    matRotX.m[1][1] = cos(fTheta * 0.1);
+    matRotX.m[1][2] = sin(fTheta * 0.1);
+    matRotX.m[2][1] = -sin(fTheta * 0.1);
+    matRotX.m[2][2] = cos(fTheta * 0.1);
     matRotX.m[3][3] = 1;
 
     for (Triangle tri in mesh.tris) {
       Triangle triToWorkWith = tri;
-      Triangle triProjected = Triangle(
-          Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0));
-      Triangle triTranslated = Triangle(
-          Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0));
+      Triangle triProjected = Triangle.empty();
+      Triangle triTranslated = Triangle.empty();
 
-      Triangle triRotatedZ = Triangle(
-          Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0));
-      Triangle triRotatedZX = Triangle(
-          Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0));
+      Triangle triRotatedZ = Triangle.empty();
+      Triangle triRotatedZX = Triangle.empty();
 
       // triProjected = triToWorkWith;
       // triRotatedZ = triToWorkWith;
@@ -151,6 +147,10 @@ class Triangle {
     arr.add(t.arr[0]);
     arr.add(t.arr[1]);
     arr.add(t.arr[2]);
+  }
+  Triangle.empty() {
+    arr = [Vec3D(0.0, 0.0, 0.0),
+    Vec3D(0.0, 0.0, 0.0),Vec3D(0.0, 0.0, 0.0)];
   }
 }
 
