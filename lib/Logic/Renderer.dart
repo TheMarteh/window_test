@@ -95,11 +95,11 @@ class Renderer {
       multiplyMatrixVector(triTranslated.arr[1], triProjected.arr[1], matProj);
       multiplyMatrixVector(triTranslated.arr[2], triProjected.arr[2], matProj);
 
+      triProjected.arr[0].x += 1.0;
       triProjected.arr[0].y += 1.0;
       triProjected.arr[1].x += 1.0;
       triProjected.arr[1].y += 1.0;
       triProjected.arr[2].x += 1.0;
-      triProjected.arr[0].x += 1.0;
       triProjected.arr[2].y += 1.0;
 
       triProjected.arr[0].x *= 0.5 * 800.toDouble();
