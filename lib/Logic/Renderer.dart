@@ -39,6 +39,7 @@ class Renderer {
         window.physicalSize.width.toDouble();
     double fFovRad = 1.0 / tan(fFov * 0.5 / 180.0 * 3.14159265);
 
+    // Projection Matrix for projecting the 3d Vertices to a 2d canvas
     matProj.m[0][0] = fAspectRatio * fFovRad;
     matProj.m[1][1] = fFovRad;
     matProj.m[2][2] = fFar / (fFar - fNear);
@@ -61,42 +62,42 @@ class Renderer {
 
     // Rotation X
     matRotX.m[0][0] = 1;
-    matRotX.m[1][1] = cos(fTheta * 0.1);
-    matRotX.m[1][2] = sin(fTheta * 0.1);
-    matRotX.m[2][1] = -sin(fTheta * 0.1);
-    matRotX.m[2][2] = cos(fTheta * 0.1);
+    matRotX.m[1][1] = cos(fTheta * 0.5);
+    matRotX.m[1][2] = sin(fTheta * 0.5);
+    matRotX.m[2][1] = -sin(fTheta * 0.5);
+    matRotX.m[2][2] = cos(fTheta * 0.5);
     matRotX.m[3][3] = 1;
 
     for (Triangle tri in mesh.tris) {
+      // initialize Triangles to work with
       Triangle triToWorkWith = tri;
       Triangle triProjected = Triangle.empty();
       Triangle triTranslated = Triangle.empty();
-
       Triangle triRotatedZ = Triangle.empty();
       Triangle triRotatedZX = Triangle.empty();
 
-      // triProjected = triToWorkWith;
-      // triRotatedZ = triToWorkWith;
-
+      // Rotate in z axis
       multiplyMatrixVector(triToWorkWith.arr[0], triRotatedZ.arr[0], matRotZ);
       multiplyMatrixVector(triToWorkWith.arr[1], triRotatedZ.arr[1], matRotZ);
       multiplyMatrixVector(triToWorkWith.arr[2], triRotatedZ.arr[2], matRotZ);
 
-      // triRotatedZX = triRotatedZ;
-
+      // Rotate in X axis
       multiplyMatrixVector(triRotatedZ.arr[0], triRotatedZX.arr[0], matRotX);
       multiplyMatrixVector(triRotatedZ.arr[1], triRotatedZX.arr[1], matRotX);
       multiplyMatrixVector(triRotatedZ.arr[2], triRotatedZX.arr[2], matRotX);
 
+      // Move in Z-axis to render the cube in front of the camera
       triTranslated = triRotatedZX;
-      triTranslated.arr[0].z = triRotatedZX.arr[0].z + 3.0;
-      triTranslated.arr[1].z = triRotatedZX.arr[1].z + 3.0;
-      triTranslated.arr[2].z = triRotatedZX.arr[2].z + 3.0;
+      triTranslated.arr[0].z = triRotatedZX.arr[0].z + 5.0;
+      triTranslated.arr[1].z = triRotatedZX.arr[1].z + 5.0;
+      triTranslated.arr[2].z = triRotatedZX.arr[2].z + 5.0;
 
+      // Project the 3d-Triangles to a 2d space
       multiplyMatrixVector(triTranslated.arr[0], triProjected.arr[0], matProj);
       multiplyMatrixVector(triTranslated.arr[1], triProjected.arr[1], matProj);
       multiplyMatrixVector(triTranslated.arr[2], triProjected.arr[2], matProj);
 
+      // Move into screen
       triProjected.arr[0].x += 1.0;
       triProjected.arr[0].y += 1.0;
       triProjected.arr[1].x += 1.0;
@@ -104,6 +105,7 @@ class Renderer {
       triProjected.arr[2].x += 1.0;
       triProjected.arr[2].y += 1.0;
 
+      // Scale into view
       triProjected.arr[0].x *= 0.5 * window.physicalSize.width.toDouble();
       triProjected.arr[0].y *= 0.5 * window.physicalSize.height.toDouble() - 30;
       triProjected.arr[1].x *= 0.5 * window.physicalSize.width.toDouble();
@@ -111,6 +113,7 @@ class Renderer {
       triProjected.arr[2].x *= 0.5 * window.physicalSize.width.toDouble();
       triProjected.arr[2].y *= 0.5 * window.physicalSize.height.toDouble() - 30;
 
+      // Draw Triangles
       trisToDraw.add(ProjectedTriangle(
           triProjected.arr[0].x,
           triProjected.arr[0].y,
@@ -121,10 +124,6 @@ class Renderer {
     }
     return trisToDraw;
   }
-
-  // void _drawTriangle(double x1, y1, x2, y2, x3, y3) {
-  //   trisToDraw.add(ProjectedTriangle(x1, y1, x2, y2, x3, y3));
-  // }
 }
 
 class Vec3D {
