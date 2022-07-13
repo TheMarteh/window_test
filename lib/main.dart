@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'dart:math';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:window_test/Logic/Cube.dart';
-import 'package:window_test/Logic/ObjConverter.dart';
-import 'package:window_test/Logic/Renderer.dart';
+import 'package:window_test/logic/Cube.dart';
+import 'package:window_test/logic/ObjConverter.dart';
+import 'package:window_test/logic/renderer.dart';
 
 void main() {
   runApp(const MyApp());
