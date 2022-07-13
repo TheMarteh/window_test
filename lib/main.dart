@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:window_test/logic/Cube.dart';
@@ -61,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: CustomPaint(
-        size: Size(900, 900),
+        size: Size(window.physicalSize.width, window.physicalSize.height),
         painter: TrisPainter(Renderer().project(Cube().MeshCube, time / 20)),
       ),
       floatingActionButton: FloatingActionButton(

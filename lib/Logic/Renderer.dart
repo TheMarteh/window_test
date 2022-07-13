@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -34,7 +35,8 @@ class Renderer {
     double fNear = 0.1;
     double fFar = 1000.0;
     double fFov = 90.0;
-    double fAspectRatio = (300.toDouble() - 30) / 300.toDouble();
+    double fAspectRatio = (window.physicalSize.height.toDouble()) /
+        window.physicalSize.width.toDouble();
     double fFovRad = 1.0 / tan(fFov * 0.5 / 180.0 * 3.14159265);
 
     matProj.m[0][0] = fAspectRatio * fFovRad;
@@ -102,12 +104,12 @@ class Renderer {
       triProjected.arr[2].x += 1.0;
       triProjected.arr[2].y += 1.0;
 
-      triProjected.arr[0].x *= 0.5 * 800.toDouble();
-      triProjected.arr[0].y *= 0.5 * 800.toDouble() - 30;
-      triProjected.arr[1].x *= 0.5 * 800.toDouble();
-      triProjected.arr[1].y *= 0.5 * 800.toDouble() - 30;
-      triProjected.arr[2].x *= 0.5 * 800.toDouble();
-      triProjected.arr[2].y *= 0.5 * 800.toDouble() - 30;
+      triProjected.arr[0].x *= 0.5 * window.physicalSize.width.toDouble();
+      triProjected.arr[0].y *= 0.5 * window.physicalSize.height.toDouble() - 30;
+      triProjected.arr[1].x *= 0.5 * window.physicalSize.width.toDouble();
+      triProjected.arr[1].y *= 0.5 * window.physicalSize.height.toDouble() - 30;
+      triProjected.arr[2].x *= 0.5 * window.physicalSize.width.toDouble();
+      triProjected.arr[2].y *= 0.5 * window.physicalSize.height.toDouble() - 30;
 
       trisToDraw.add(ProjectedTriangle(
           triProjected.arr[0].x,
@@ -149,8 +151,7 @@ class Triangle {
     arr.add(t.arr[2]);
   }
   Triangle.empty() {
-    arr = [Vec3D(0.0, 0.0, 0.0),
-    Vec3D(0.0, 0.0, 0.0),Vec3D(0.0, 0.0, 0.0)];
+    arr = [Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0)];
   }
 }
 
