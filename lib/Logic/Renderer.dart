@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class Renderer {
-  Vec3D multiplyMatrixVector(Vec3D i, Vec3D o, Mat4x4 m) {
+  Vec3D multiplyMatrixVector(final Vec3D i, Vec3D o, Mat4x4 m) {
     // print("Before multiplication: " + i.x.toString());
     double x = i.x.toDouble();
     double y = i.y.toDouble();
