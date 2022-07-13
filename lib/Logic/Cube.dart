@@ -11,7 +11,7 @@ class Cube {
     Triangle(Vec3D(1.0, 0.0, 0.0), Vec3D(1.0, 1.0, 1.0), Vec3D(1.0, 0.0, 1.0)),
 
     // NORTH
-    Triangle(Vec3D(1.0, 0.0, 1.0), Vec3D(1.0, 1.0, 1.0), Vec3D(1.0, 1.0, 1.0)),
+    Triangle(Vec3D(1.0, 0.0, 1.0), Vec3D(1.0, 1.0, 1.0), Vec3D(0.0, 1.0, 1.0)),
     Triangle(Vec3D(1.0, 0.0, 1.0), Vec3D(0.0, 1.0, 1.0), Vec3D(0.0, 0.0, 1.0)),
 
     // WEST

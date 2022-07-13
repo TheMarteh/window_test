@@ -32,6 +32,10 @@ class Renderer {
   List<ProjectedTriangle> project(Mesh mesh, double time) {
     List<ProjectedTriangle> trisToDraw = [];
     Mat4x4 matProj = Mat4x4();
+
+    // camera placeholder
+    Vec3D vCamera = Vec3D(0.0, 0.0, 0.0);
+
     double fNear = 0.1;
     double fFar = 1000.0;
     double fFov = 90.0;
@@ -115,7 +119,12 @@ class Renderer {
       normal.y /= l;
       normal.z /= l;
 
-      if (normal.z < 0) {
+      // The normal is used to check if the triangle is actually facing the
+      // camera or not
+      if (normal.x * (triTranslated.arr[0].x - vCamera.x) +
+              normal.y * (triTranslated.arr[0].y - vCamera.y) +
+              normal.z * (triTranslated.arr[0].z - vCamera.z) <
+          0.0) {
         // Project the 3d-Triangles to a 2d space
         multiplyMatrixVector(
             triTranslated.arr[0], triProjected.arr[0], matProj);
