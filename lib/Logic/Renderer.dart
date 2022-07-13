@@ -52,7 +52,7 @@ class Renderer {
 
     double fTheta = 1.0 * time;
 
-    // Rotation Z
+    // Rotation Matrix for Z axis
     matRotZ.m[0][0] = cos(fTheta);
     matRotZ.m[0][1] = sin(fTheta);
     matRotZ.m[1][0] = -sin(fTheta);
@@ -60,7 +60,7 @@ class Renderer {
     matRotZ.m[2][2] = 1;
     matRotZ.m[3][3] = 1;
 
-    // Rotation X
+    // Rotation Matrix for X axis
     matRotX.m[0][0] = 1;
     matRotX.m[1][1] = cos(fTheta * 0.5);
     matRotX.m[1][2] = sin(fTheta * 0.5);
@@ -92,35 +92,66 @@ class Renderer {
       triTranslated.arr[1].z = triRotatedZX.arr[1].z + 5.0;
       triTranslated.arr[2].z = triRotatedZX.arr[2].z + 5.0;
 
-      // Project the 3d-Triangles to a 2d space
-      multiplyMatrixVector(triTranslated.arr[0], triProjected.arr[0], matProj);
-      multiplyMatrixVector(triTranslated.arr[1], triProjected.arr[1], matProj);
-      multiplyMatrixVector(triTranslated.arr[2], triProjected.arr[2], matProj);
+      Vec3D normal = Vec3D(0.0, 0.0, 0.0);
+      Vec3D line1 = Vec3D(0.0, 0.0, 0.0);
+      Vec3D line2 = Vec3D(0.0, 0.0, 0.0);
 
-      // Move into screen
-      triProjected.arr[0].x += 1.0;
-      triProjected.arr[0].y += 1.0;
-      triProjected.arr[1].x += 1.0;
-      triProjected.arr[1].y += 1.0;
-      triProjected.arr[2].x += 1.0;
-      triProjected.arr[2].y += 1.0;
+      // calculate the normal
+      line1.x = triTranslated.arr[1].x - triTranslated.arr[0].x;
+      line1.y = triTranslated.arr[1].y - triTranslated.arr[0].y;
+      line1.z = triTranslated.arr[1].z - triTranslated.arr[0].z;
 
-      // Scale into view
-      triProjected.arr[0].x *= 0.5 * window.physicalSize.width.toDouble();
-      triProjected.arr[0].y *= 0.5 * window.physicalSize.height.toDouble() - 30;
-      triProjected.arr[1].x *= 0.5 * window.physicalSize.width.toDouble();
-      triProjected.arr[1].y *= 0.5 * window.physicalSize.height.toDouble() - 30;
-      triProjected.arr[2].x *= 0.5 * window.physicalSize.width.toDouble();
-      triProjected.arr[2].y *= 0.5 * window.physicalSize.height.toDouble() - 30;
+      line2.x = triTranslated.arr[2].x - triTranslated.arr[0].x;
+      line2.y = triTranslated.arr[2].y - triTranslated.arr[0].y;
+      line2.z = triTranslated.arr[2].z - triTranslated.arr[0].z;
 
-      // Draw Triangles
-      trisToDraw.add(ProjectedTriangle(
-          triProjected.arr[0].x,
-          triProjected.arr[0].y,
-          triProjected.arr[1].x,
-          triProjected.arr[1].y,
-          triProjected.arr[2].x,
-          triProjected.arr[2].y));
+      normal.x = line1.y * line2.z - line1.z * line2.y;
+      normal.y = line1.z * line2.x - line1.x * line2.z;
+      normal.z = line1.x * line2.y - line1.y * line2.x;
+
+      double l =
+          sqrt(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
+      normal.x /= l;
+      normal.y /= l;
+      normal.z /= l;
+
+      if (normal.z < 0) {
+        // Project the 3d-Triangles to a 2d space
+        multiplyMatrixVector(
+            triTranslated.arr[0], triProjected.arr[0], matProj);
+        multiplyMatrixVector(
+            triTranslated.arr[1], triProjected.arr[1], matProj);
+        multiplyMatrixVector(
+            triTranslated.arr[2], triProjected.arr[2], matProj);
+
+        // Move into screen
+        triProjected.arr[0].x += 1.0;
+        triProjected.arr[0].y += 1.0;
+        triProjected.arr[1].x += 1.0;
+        triProjected.arr[1].y += 1.0;
+        triProjected.arr[2].x += 1.0;
+        triProjected.arr[2].y += 1.0;
+
+        // Scale into view
+        triProjected.arr[0].x *= 0.5 * window.physicalSize.width.toDouble();
+        triProjected.arr[0].y *=
+            0.5 * window.physicalSize.height.toDouble() - 30;
+        triProjected.arr[1].x *= 0.5 * window.physicalSize.width.toDouble();
+        triProjected.arr[1].y *=
+            0.5 * window.physicalSize.height.toDouble() - 30;
+        triProjected.arr[2].x *= 0.5 * window.physicalSize.width.toDouble();
+        triProjected.arr[2].y *=
+            0.5 * window.physicalSize.height.toDouble() - 30;
+
+        // Draw Triangles
+        trisToDraw.add(ProjectedTriangle(
+            triProjected.arr[0].x,
+            triProjected.arr[0].y,
+            triProjected.arr[1].x,
+            triProjected.arr[1].y,
+            triProjected.arr[2].x,
+            triProjected.arr[2].y));
+      }
     }
     return trisToDraw;
   }
