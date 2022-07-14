@@ -56,8 +56,9 @@ class Renderer {
     return gradientColor;
   }
 
-  List<ProjectedTriangle> project(Mesh mesh, double time) {
-    List<ProjectedTriangle> trisToDraw = [];
+  List<Triangle> project(Mesh mesh, double time) {
+    // List<ProjectedTriangle> trisToDraw = [];
+    List<Triangle> trisToRaster = [];
     Mat4x4 matProj = Mat4x4();
 
     // camera placeholder
@@ -120,9 +121,9 @@ class Renderer {
 
       // Move in Z-axis to render the cube in front of the camera
       triTranslated = triRotatedZX;
-      triTranslated.arr[0].z = triRotatedZX.arr[0].z + 5.0;
-      triTranslated.arr[1].z = triRotatedZX.arr[1].z + 5.0;
-      triTranslated.arr[2].z = triRotatedZX.arr[2].z + 5.0;
+      triTranslated.arr[0].z = triRotatedZX.arr[0].z + 8.0;
+      triTranslated.arr[1].z = triRotatedZX.arr[1].z + 8.0;
+      triTranslated.arr[2].z = triRotatedZX.arr[2].z + 8.0;
 
       Vec3D normal = Vec3D(0.0, 0.0, 0.0);
       Vec3D line1 = Vec3D(0.0, 0.0, 0.0);
@@ -192,19 +193,22 @@ class Renderer {
             0.5 * Globals.screenHeight.toDouble();
         triProjected.arr[2].x *= 0.5 * Globals.screenWidth.toDouble();
         triProjected.arr[2].y *= 0.5 * Globals.screenHeight.toDouble();
+        triProjected.col = col;
 
-        // Draw Triangles
-        trisToDraw.add(ProjectedTriangle(
-            triProjected.arr[0].x,
-            triProjected.arr[0].y,
-            triProjected.arr[1].x,
-            triProjected.arr[1].y,
-            triProjected.arr[2].x,
-            triProjected.arr[2].y,
-            col));
+        trisToRaster.add(triProjected);
+
+        // // Draw Triangles
+        // trisToDraw.add(ProjectedTriangle(
+        //     triProjected.arr[0].x,
+        //     triProjected.arr[0].y,
+        //     triProjected.arr[1].x,
+        //     triProjected.arr[1].y,
+        //     triProjected.arr[2].x,
+        //     triProjected.arr[2].y,
+        //     col));
       }
     }
-    return trisToDraw;
+    return trisToRaster;
   }
 }
 
@@ -221,17 +225,18 @@ class Vec3D {
 
 class Triangle {
   List<Vec3D> arr = [];
-  Triangle(Vec3D p1, Vec3D p2, Vec3D p3) {
+  Color col;
+  Triangle(Vec3D p1, Vec3D p2, Vec3D p3, {this.col = Colors.green}) {
     arr.add(p1);
     arr.add(p2);
     arr.add(p3);
   }
-  Triangle.from(Triangle t) {
+  Triangle.from(Triangle t, {this.col = Colors.green}) {
     arr.add(t.arr[0]);
     arr.add(t.arr[1]);
     arr.add(t.arr[2]);
   }
-  Triangle.empty() {
+  Triangle.empty({this.col = Colors.green}) {
     arr = [Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0), Vec3D(0.0, 0.0, 0.0)];
   }
 }
@@ -274,9 +279,10 @@ class ProjectedTriangle {
 
 class TrisPainter extends CustomPainter {
   //         <-- CustomPainter class
-  final List<ProjectedTriangle> trisToDraw;
+  // final List<ProjectedTriangle> trisToDraw;
+  final List<Triangle> trisToRaster;
   bool wireframing;
-  TrisPainter(this.trisToDraw, {this.wireframing = true})
+  TrisPainter(this.trisToRaster, {this.wireframing = false})
       : super(repaint: DrawingController());
   @override
   void paint(Canvas canvas, Size size) {
@@ -284,26 +290,32 @@ class TrisPainter extends CustomPainter {
       ..color = Colors.black
       ..strokeWidth = 1;
 
-    for (ProjectedTriangle tri in trisToDraw) {
+    trisToRaster.sort((t1, t2) {
+      double z1 = (t1.arr[0].z + t1.arr[1].z + t1.arr[2].z) / 3.0;
+      double z2 = (t2.arr[0].z + t2.arr[1].z + t2.arr[2].z) / 3.0;
+      return z1.compareTo(z2);
+    });
+
+    for (Triangle tri in trisToRaster) {
       final paint = Paint()
-        ..color = tri.color
+        ..color = tri.col
         ..strokeWidth = 1;
       Path path = Path()
-        ..moveTo(tri.doubles[0], tri.doubles[1])
-        ..lineTo(tri.doubles[2], tri.doubles[3])
-        ..lineTo(tri.doubles[4], tri.doubles[5])
+        ..moveTo(tri.arr[0].x, tri.arr[0].y)
+        ..lineTo(tri.arr[1].x, tri.arr[1].y)
+        ..lineTo(tri.arr[2].x, tri.arr[2].y)
         ..close();
 
       canvas.drawPath(path, paint);
 
       // Wireframe painting
       if (this.wireframing == true) {
-        canvas.drawLine(Offset(tri.doubles[0], tri.doubles[1]),
-            Offset(tri.doubles[2], tri.doubles[3]), wireframePaint);
-        canvas.drawLine(Offset(tri.doubles[2], tri.doubles[3]),
-            Offset(tri.doubles[4], tri.doubles[5]), wireframePaint);
-        canvas.drawLine(Offset(tri.doubles[0], tri.doubles[1]),
-            Offset(tri.doubles[4], tri.doubles[5]), wireframePaint);
+        canvas.drawLine(Offset(tri.arr[0].x, tri.arr[0].y),
+            Offset(tri.arr[1].x, tri.arr[1].y), wireframePaint);
+        canvas.drawLine(Offset(tri.arr[1].x, tri.arr[1].y),
+            Offset(tri.arr[2].x, tri.arr[2].y), wireframePaint);
+        canvas.drawLine(Offset(tri.arr[2].x, tri.arr[2].y),
+            Offset(tri.arr[0].x, tri.arr[0].y), wireframePaint);
       }
     }
   }
