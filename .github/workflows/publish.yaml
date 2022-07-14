@@ -16,6 +16,9 @@ jobs:
       - name: Installing ⚙️​
         run: flutter pub get
 
+      - name: LS
+        run: ls
+
       # - name: Testing 🧪​
       #   run: flutter test
 
