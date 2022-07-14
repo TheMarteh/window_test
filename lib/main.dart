@@ -46,7 +46,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    super.initState();
     // projection matrix
     // s.start();
     // List<ProjectedTriangle> trisToDraw = Renderer().project(Cube.MeshCube);
@@ -59,6 +58,8 @@ class _MyHomePageState extends State<MyHomePage> {
       object = obj;
       print("obj should be loaded");
       });
+    super.initState();
+
   }
 
   @override
