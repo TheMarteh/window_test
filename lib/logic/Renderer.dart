@@ -293,7 +293,7 @@ class TrisPainter extends CustomPainter {
     trisToRaster.sort((t1, t2) {
       double z1 = (t1.arr[0].z + t1.arr[1].z + t1.arr[2].z) / 3.0;
       double z2 = (t2.arr[0].z + t2.arr[1].z + t2.arr[2].z) / 3.0;
-      return z1.compareTo(z2);
+      return z2.compareTo(z1);
     });
 
     for (Triangle tri in trisToRaster) {
