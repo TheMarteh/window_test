@@ -298,7 +298,7 @@ class TrisPainter extends CustomPainter {
       canvas.drawPath(path, paint);
 
       // Wireframe painting
-      if (this.wireframing != true) {
+      if (this.wireframing == true) {
         canvas.drawLine(Offset(tri.doubles[0], tri.doubles[1]),
             Offset(tri.doubles[2], tri.doubles[3]), wireframePaint);
         canvas.drawLine(Offset(tri.doubles[2], tri.doubles[3]),

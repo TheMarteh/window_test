@@ -36,6 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // List<Polygon> polys = [];
   List<Offset> pointsToDraw = [];
   double time = 100.0;
+  late Timer _timer;
   ObjConverter o = ObjConverter("lib\\assets\\teapot.obj");
 
   // Stopwatch s = Stopwatch();
@@ -49,11 +50,17 @@ class _MyHomePageState extends State<MyHomePage> {
     // s.start();
     // List<ProjectedTriangle> trisToDraw = Renderer().project(Cube.MeshCube);
 
-    Timer _timer = Timer.periodic(Duration(milliseconds: 33), (Timer t) {
+    _timer = Timer.periodic(Duration(milliseconds: 33), (Timer t) {
       tick();
     });
 
     o.getMesh();
+  }
+
+  @override
+  void dispose(){
+    _timer.cancel();
+    super.dispose();
   }
 
   @override

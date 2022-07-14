@@ -19,8 +19,8 @@ jobs:
       # - name: LS
       #   run: ls -R
 
-      - name: Testing 🧪​
-        run: flutter test
+      # - name: Testing 🧪​
+      #   run: flutter test
 
       - name: Building 🛠️
         run: flutter build web --release --web-renderer canvaskit
