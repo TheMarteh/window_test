@@ -11,6 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3 # Only works with v2
       - uses: subosito/flutter-action@v2
+      - name: Cleaning..
+        run: flutter clean
       - name: Installing ⚙️​
         run: flutter pub get
 
