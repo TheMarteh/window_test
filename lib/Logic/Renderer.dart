@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:window_test/globals.dart';
 import 'dart:math';
 import 'dart:ui';
+
 
 class Renderer {
   Vec3D multiplyMatrixVector(final Vec3D i, Vec3D o, Mat4x4 m) {
@@ -65,8 +67,8 @@ class Renderer {
     double fNear = 0.1;
     double fFar = 1000.0;
     double fFov = 90.0;
-    double fAspectRatio = (window.physicalSize.height.toDouble()) /
-        window.physicalSize.width.toDouble();
+    double fAspectRatio = (Globals.screenHeight.toDouble()) /
+        Globals.screenWidth.toDouble();
     double fFovRad = 1.0 / tan(fFov * 0.5 / 180.0 * 3.14159265);
 
     // Projection Matrix for projecting the 3d Vertices to a 2d canvas
@@ -174,23 +176,23 @@ class Renderer {
             triTranslated.arr[2], triProjected.arr[2], matProj);
 
         // Move into screen
-        triProjected.arr[0].x += 1.0;
+        triProjected.arr[0].x += 0.5;
         triProjected.arr[0].y += 1.0;
-        triProjected.arr[1].x += 1.0;
+        triProjected.arr[1].x += 0.5;
         triProjected.arr[1].y += 1.0;
-        triProjected.arr[2].x += 1.0;
+        triProjected.arr[2].x += 0.5;
         triProjected.arr[2].y += 1.0;
 
         // Scale into view
-        triProjected.arr[0].x *= 0.5 * window.physicalSize.width.toDouble();
+        triProjected.arr[0].x *= 0.5 * Globals.screenWidth.toDouble();
         triProjected.arr[0].y *=
-            0.5 * window.physicalSize.height.toDouble() - 30;
-        triProjected.arr[1].x *= 0.5 * window.physicalSize.width.toDouble();
+            0.5 * Globals.screenHeight.toDouble() - 30;
+        triProjected.arr[1].x *= 0.5 * Globals.screenWidth.toDouble();
         triProjected.arr[1].y *=
-            0.5 * window.physicalSize.height.toDouble() - 30;
-        triProjected.arr[2].x *= 0.5 * window.physicalSize.width.toDouble();
+            0.5 * Globals.screenHeight.toDouble() - 30;
+        triProjected.arr[2].x *= 0.5 * Globals.screenWidth.toDouble();
         triProjected.arr[2].y *=
-            0.5 * window.physicalSize.height.toDouble() - 30;
+            0.5 * Globals.screenHeight.toDouble() - 30;
 
         // Draw Triangles
         trisToDraw.add(ProjectedTriangle(
