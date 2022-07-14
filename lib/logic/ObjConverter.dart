@@ -41,6 +41,7 @@ class ObjConverter {
     // return;
 
     Mesh mesh = Mesh(tris);
+    print("obj should be converted");
     return mesh;
   }
 

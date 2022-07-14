@@ -55,7 +55,10 @@ class _MyHomePageState extends State<MyHomePage> {
       tick();
     });
 
-    o.getMesh().then((Mesh obj) => object = obj);
+    o.getMesh().then((Mesh obj) {
+      object = obj;
+      print("obj should be loaded");
+      });
   }
 
   @override
