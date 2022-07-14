@@ -41270,9 +41270,9 @@ A.p7.prototype={
 ar(){return new A.rE(A.a([],t.kQ),new A.ju(A.a([A.ex(A.aO(0,0,0),A.aO(0,1,0),A.aO(1,1,0)),A.ex(A.aO(0,0,0),A.aO(1,1,0),A.aO(1,0,0)),A.ex(A.aO(1,0,0),A.aO(1,1,0),A.aO(1,1,1)),A.ex(A.aO(1,0,0),A.aO(1,1,1),A.aO(1,0,1)),A.ex(A.aO(1,0,1),A.aO(1,1,1),A.aO(0,1,1)),A.ex(A.aO(1,0,1),A.aO(0,1,1),A.aO(0,0,1)),A.ex(A.aO(0,0,1),A.aO(0,1,1),A.aO(0,1,0)),A.ex(A.aO(0,0,1),A.aO(0,1,0),A.aO(0,0,0)),A.ex(A.aO(0,1,0),A.aO(0,1,1),A.aO(1,1,1)),A.ex(A.aO(0,1,0),A.aO(1,1,1),A.aO(1,1,0)),A.ex(A.aO(1,0,1),A.aO(0,0,1),A.aO(0,0,0)),A.ex(A.aO(1,0,1),A.aO(0,0,0),A.aO(1,0,0))],t.a9)),new A.Lv("assets/teapot.obj"),B.n)}}
 A.rE.prototype={
 aV(){var s=this
-s.bk()
 s.r=A.a00(A.c0(0,33),new A.SJ(s))
-s.w.kK().aP(0,new A.SK(s),t.P)},
+s.w.kK().aP(0,new A.SK(s),t.P)
+s.bk()},
 t(a){A.b(this.r,"_timer").au(0)
 this.b1(0)},
 J(a,b){var s=this,r=null,q=s.a.c
