@@ -1,4 +1,4 @@
-import 'package:window_test/logic/renderer.dart';
+import 'package:window_test/logic/Renderer.dart';
 
 class Cube {
   Mesh MeshCube = Mesh([
