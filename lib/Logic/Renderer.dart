@@ -29,12 +29,39 @@ class Renderer {
     return Vec3D(x, y, z);
   }
 
+  Color calculateColor(double lum) {
+    Color baseColor = Color.fromARGB(255, 209, 255, 84);
+    int range = 125;
+    int scalenum = (125 * lum).round();
+
+    // with material gradients
+    int gradientnum = (lum.abs() * 9).round();
+    List<Color> colors = [
+      Colors.blue.shade900,
+      Colors.blue.shade800,
+      Colors.blue.shade700,
+      Colors.blue.shade600,
+      Colors.blue.shade500,
+      Colors.blue.shade400,
+      Colors.blue.shade300,
+      Colors.blue.shade200,
+      Colors.blue.shade100,
+      Colors.blue.shade50,
+    ];
+    Color gradientColor = colors[gradientnum];
+    Color newColor = Color.fromARGB(baseColor.alpha, baseColor.red - scalenum,
+        baseColor.green - scalenum, baseColor.blue - scalenum);
+
+    return gradientColor;
+  }
+
   List<ProjectedTriangle> project(Mesh mesh, double time) {
     List<ProjectedTriangle> trisToDraw = [];
     Mat4x4 matProj = Mat4x4();
 
     // camera placeholder
     Vec3D vCamera = Vec3D(0.0, 0.0, 0.0);
+    Vec3D light_direction = Vec3D(0.0, 0.0, -1.0);
 
     double fNear = 0.1;
     double fFar = 1000.0;
@@ -125,6 +152,20 @@ class Renderer {
               normal.y * (triTranslated.arr[0].y - vCamera.y) +
               normal.z * (triTranslated.arr[0].z - vCamera.z) <
           0.0) {
+        // illumination
+        double l = sqrt(light_direction.x * light_direction.x +
+            light_direction.y * light_direction.y +
+            light_direction.z * light_direction.z);
+        light_direction.x /= l;
+        light_direction.y /= l;
+        light_direction.z /= l;
+
+        double dp = normal.x * light_direction.x +
+            normal.y * light_direction.y +
+            normal.z * light_direction.z;
+
+        Color col = calculateColor(dp);
+
         // Project the 3d-Triangles to a 2d space
         multiplyMatrixVector(
             triTranslated.arr[0], triProjected.arr[0], matProj);
@@ -159,7 +200,8 @@ class Renderer {
             triProjected.arr[1].x,
             triProjected.arr[1].y,
             triProjected.arr[2].x,
-            triProjected.arr[2].y));
+            triProjected.arr[2].y,
+            col));
       }
     }
     return trisToDraw;
@@ -215,8 +257,9 @@ class Mat4x4 {
 class ProjectedTriangle {
   List<Offset> offsets = List<Offset>.filled(3, Offset(0.0, 0.0));
   List<double> doubles = [];
-  ProjectedTriangle(
-      double x1, double y1, double x2, double y2, double x3, double y3) {
+  Color color;
+  ProjectedTriangle(double x1, double y1, double x2, double y2, double x3,
+      double y3, this.color) {
     offsets[0] = Offset(x1, y1);
     offsets[1] = Offset(x2, y2);
     offsets[2] = Offset(x3, y3);
@@ -232,20 +275,36 @@ class ProjectedTriangle {
 class TrisPainter extends CustomPainter {
   //         <-- CustomPainter class
   final List<ProjectedTriangle> trisToDraw;
-  TrisPainter(this.trisToDraw) : super(repaint: DrawingController());
+  bool wireframing;
+  TrisPainter(this.trisToDraw, {this.wireframing = false})
+      : super(repaint: DrawingController());
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
+    final wireframePaint = Paint()
       ..color = Colors.black
-      ..strokeWidth = 2;
+      ..strokeWidth = 1;
 
     for (ProjectedTriangle tri in trisToDraw) {
-      canvas.drawLine(Offset(tri.doubles[0], tri.doubles[1]),
-          Offset(tri.doubles[2], tri.doubles[3]), paint);
-      canvas.drawLine(Offset(tri.doubles[2], tri.doubles[3]),
-          Offset(tri.doubles[4], tri.doubles[5]), paint);
-      canvas.drawLine(Offset(tri.doubles[0], tri.doubles[1]),
-          Offset(tri.doubles[4], tri.doubles[5]), paint);
+      final paint = Paint()
+        ..color = tri.color
+        ..strokeWidth = 1;
+      Path path = Path()
+        ..moveTo(tri.doubles[0], tri.doubles[1])
+        ..lineTo(tri.doubles[2], tri.doubles[3])
+        ..lineTo(tri.doubles[4], tri.doubles[5])
+        ..close();
+
+      canvas.drawPath(path, paint);
+
+      // Wireframe painting
+      if (this.wireframing != true) {
+        canvas.drawLine(Offset(tri.doubles[0], tri.doubles[1]),
+            Offset(tri.doubles[2], tri.doubles[3]), wireframePaint);
+        canvas.drawLine(Offset(tri.doubles[2], tri.doubles[3]),
+            Offset(tri.doubles[4], tri.doubles[5]), wireframePaint);
+        canvas.drawLine(Offset(tri.doubles[0], tri.doubles[1]),
+            Offset(tri.doubles[4], tri.doubles[5]), wireframePaint);
+      }
     }
   }
 

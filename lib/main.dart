@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // s.start();
     // List<ProjectedTriangle> trisToDraw = Renderer().project(Cube.MeshCube);
 
-    Timer _timer = Timer.periodic(Duration(milliseconds: 16), (Timer t) {
+    Timer _timer = Timer.periodic(Duration(milliseconds: 33), (Timer t) {
       tick();
     });
 

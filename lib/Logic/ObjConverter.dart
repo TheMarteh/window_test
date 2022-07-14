@@ -17,7 +17,7 @@ class ObjConverter {
 
     for (String line in lines) {
       // Triangle tri = Triangle(p1, p2, p3)
-      print("Test" + line);
+      // print("Test" + line);
     }
 
     return;
