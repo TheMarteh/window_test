@@ -176,11 +176,11 @@ class Renderer {
             triTranslated.arr[2], triProjected.arr[2], matProj);
 
         // Move into screen
-        triProjected.arr[0].x += 0.5;
+        triProjected.arr[0].x += 1.0;
         triProjected.arr[0].y += 1.0;
-        triProjected.arr[1].x += 0.5;
+        triProjected.arr[1].x += 1.0;
         triProjected.arr[1].y += 1.0;
-        triProjected.arr[2].x += 0.5;
+        triProjected.arr[2].x += 1.0;
         triProjected.arr[2].y += 1.0;
 
         // Scale into view
