@@ -5,11 +5,11 @@ class ObjConverter {
   late String fileName;
   ObjConverter(this.fileName);
 
-  void getMesh() async {
+  Future<Mesh> getMesh() async {
     List<Triangle> tris = [];
     List<Vec3D> vertices = [];
     String fileAsString = "";
-    String file = await rootBundle.loadString(fileName);
+    String file = await loadFile();
     List<String> lines = file.split("\n");
 
     // var request = await html.HttpRequest.getString("lib\\assets\\teapot.obj")
@@ -17,7 +17,7 @@ class ObjConverter {
     // List<String> lines = request.split("\n");
 
     for (String line in lines) {
-      print(line);
+      // print(line);
       if (line[0] == "v") {
         List<String> splitted = line.split(" ");
         Vec3D v = Vec3D(double.parse(splitted[1]), double.parse(splitted[2]),
@@ -31,16 +31,21 @@ class ObjConverter {
           int.parse(splitted[2]),
           int.parse(splitted[3])
         ];
-        tris.add(Triangle(vertices[p[0]], vertices[p[1]], vertices[p[2]]));
+        tris.add(Triangle(vertices[p[0] - 1], vertices[p[1] - 1], vertices[p[2] - 1]));
       }
 
       // Triangle tri = Triangle(p1, p2, p3)
       // print("Test" + line);
     }
 
-    return;
+    // return;
 
-    // Mesh mesh = Mesh(tris);
-    // return mesh;
+    Mesh mesh = Mesh(tris);
+    return mesh;
+  }
+
+  Future<String> loadFile() async {
+    Future<String> file = rootBundle.loadString(fileName);
+    return file;
   }
 }

@@ -36,6 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // List<Polygon> polys = [];
   List<Offset> pointsToDraw = [];
   double time = 100.0;
+  Mesh object = Cube().MeshCube;
   late Timer _timer;
   ObjConverter o = ObjConverter('assets/teapot.obj');
 
@@ -54,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
       tick();
     });
 
-    o.getMesh();
+    o.getMesh().then((Mesh obj) => object = obj);
   }
 
   @override
@@ -71,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: CustomPaint(
         size: Size(Globals.screenWidth, Globals.screenHeight),
-        painter: TrisPainter(Renderer().project(Cube().MeshCube, time / 20)),
+        painter: TrisPainter(Renderer().project(object, time / 20)),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: tick,
