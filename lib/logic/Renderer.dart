@@ -186,13 +186,12 @@ class Renderer {
         // Scale into view
         triProjected.arr[0].x *= 0.5 * Globals.screenWidth.toDouble();
         triProjected.arr[0].y *=
-            0.5 * Globals.screenHeight.toDouble() - 30;
+            0.5 * Globals.screenHeight.toDouble();
         triProjected.arr[1].x *= 0.5 * Globals.screenWidth.toDouble();
         triProjected.arr[1].y *=
-            0.5 * Globals.screenHeight.toDouble() - 30;
+            0.5 * Globals.screenHeight.toDouble();
         triProjected.arr[2].x *= 0.5 * Globals.screenWidth.toDouble();
-        triProjected.arr[2].y *=
-            0.5 * Globals.screenHeight.toDouble() - 30;
+        triProjected.arr[2].y *= 0.5 * Globals.screenHeight.toDouble();
 
         // Draw Triangles
         trisToDraw.add(ProjectedTriangle(
