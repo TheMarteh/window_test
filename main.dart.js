@@ -13536,7 +13536,7 @@ aR:function aR(a){this.a=a},
 du:function du(a){this.a=a},
 fm:function fm(a){this.a=a},
 Wd:function Wd(a){this.a=a},
-Lw:function Lw(){},
+Lw:function Lw(a){this.a=a},
 aO(a,b,c){var s=new A.d6()
 s.a=a
 s.b=b
@@ -41085,35 +41085,35 @@ s=s[3]
 return Math.sqrt(r*r+q*q+p*p+s*s)}}
 A.Wd.prototype={}
 A.Lw.prototype={
-kM(){var s=0,r=A.a4(t.z),q,p,o,n,m,l,k,j,i,h,g,f,e,d,c
-var $async$kM=A.a5(function(a,b){if(a===1)return A.a1(b,r)
-while(true)switch(s){case 0:f=A.a([],t.a9)
-e=t.hU
-d=A.a([],e)
+kM(){var s=0,r=A.a4(t.z),q,p=this,o,n,m,l,k,j,i,h,g,f,e,d,c,b
+var $async$kM=A.a5(function(a,a0){if(a===1)return A.a1(a0,r)
+while(true)switch(s){case 0:e=A.a([],t.a9)
+d=t.hU
+c=A.a([],d)
 s=3
-return A.a8($.EZ().Oc("teapot.obj"),$async$kM)
-case 3:c=b.split("\n")
-for(p=c.length,o=0;o<p;++o){n=c[o]
-A.XU(A.n(n))
-m=J.ar(n)
-if(m.i(n,0)==="v"){l=m.np(n," ")
-k=A.V1(l[1])
-j=A.V1(l[2])
-i=A.V1(l[3])
-h=new A.d6()
-h.a=k
-h.b=j
-h.c=i
-d.push(h)}if(m.i(n,0)==="f"){l=m.np(n," ")
-g=[A.cS(l[1],null),A.cS(l[2],null),A.cS(l[3],null)]
-m=d[g[0]]
-k=d[g[1]]
-j=d[g[2]]
-i=A.a([],e)
-i.push(m)
-i.push(k)
-i.push(j)
-f.push(new A.cB(i))}}s=1
+return A.a8($.EZ().Oc(A.b(p.a,"fileName")),$async$kM)
+case 3:b=a0.split("\n")
+for(o=b.length,n=0;n<o;++n){m=b[n]
+A.XU(A.n(m))
+l=J.ar(m)
+if(l.i(m,0)==="v"){k=l.np(m," ")
+j=A.V1(k[1])
+i=A.V1(k[2])
+h=A.V1(k[3])
+g=new A.d6()
+g.a=j
+g.b=i
+g.c=h
+c.push(g)}if(l.i(m,0)==="f"){k=l.np(m," ")
+f=[A.cS(k[1],null),A.cS(k[2],null),A.cS(k[3],null)]
+l=c[f[0]]
+j=c[f[1]]
+i=c[f[2]]
+h=A.a([],d)
+h.push(l)
+h.push(j)
+h.push(i)
+e.push(new A.cB(h))}}s=1
 break
 case 1:return A.a2(q,r)}})
 return A.a3($async$kM,r)}}
@@ -41281,7 +41281,7 @@ A.vx.prototype={}
 A.wO.prototype={
 J(a,b){return new A.oS(new A.p5("View Demo Home Page",null),"View Demo",A.a_Z(null,B.zr),null)}}
 A.p5.prototype={
-ar(){return new A.rC(A.a([],t.kQ),new A.Lw(),B.n)}}
+ar(){return new A.rC(A.a([],t.kQ),new A.Lw("assets/teapot.obj"),B.n)}}
 A.rC.prototype={
 aV(){var s=this
 s.bk()
