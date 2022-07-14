@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:window_test/logic/renderer.dart';
+import 'package:window_test/logic/Renderer.dart';
 
 class ObjConverter {
   late String fileName;
