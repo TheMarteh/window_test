@@ -9,7 +9,7 @@ class ObjConverter {
     List<Triangle> tris = [];
     List<Vec3D> vertices = [];
     String fileAsString = "";
-    String file = await rootBundle.loadString("teapot.obj");
+    String file = await rootBundle.loadString(fileName);
     List<String> lines = file.split("\n");
 
     // var request = await html.HttpRequest.getString("lib\\assets\\teapot.obj")

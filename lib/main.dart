@@ -37,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Offset> pointsToDraw = [];
   double time = 100.0;
   late Timer _timer;
-  ObjConverter o = ObjConverter("lib\\assets\\teapot.obj");
+  ObjConverter o = ObjConverter('assets/teapot.obj');
 
   // Stopwatch s = Stopwatch();
 
