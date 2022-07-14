@@ -276,7 +276,7 @@ class TrisPainter extends CustomPainter {
   //         <-- CustomPainter class
   final List<ProjectedTriangle> trisToDraw;
   bool wireframing;
-  TrisPainter(this.trisToDraw, {this.wireframing = false})
+  TrisPainter(this.trisToDraw, {this.wireframing = true})
       : super(repaint: DrawingController());
   @override
   void paint(Canvas canvas, Size size) {
