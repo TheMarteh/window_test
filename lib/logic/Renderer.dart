@@ -94,10 +94,10 @@ class Renderer {
 
     // Rotation Matrix for X axis
     matRotX.m[0][0] = 1;
-    matRotX.m[1][1] = cos(fTheta * 0.5);
-    matRotX.m[1][2] = sin(fTheta * 0.5);
-    matRotX.m[2][1] = -sin(fTheta * 0.5);
-    matRotX.m[2][2] = cos(fTheta * 0.5);
+    matRotX.m[1][1] = cos(fTheta * 0.3);
+    matRotX.m[1][2] = sin(fTheta * 0.3);
+    matRotX.m[2][1] = -sin(fTheta * 0.3);
+    matRotX.m[2][2] = cos(fTheta * 0.3);
     matRotX.m[3][3] = 1;
 
     for (Triangle tri in mesh.tris) {
