@@ -279,8 +279,8 @@ class TrisPainter extends CustomPainter {
   // final List<ProjectedTriangle> trisToDraw;
   final List<Triangle> trisToRaster;
   bool wireframing;
-  TrisPainter(this.trisToRaster, {this.wireframing = true})
-      : super(repaint: DrawingController());
+  TrisPainter(this.trisToRaster, {this.wireframing = true});
+  // : super(repaint: DrawingController());
   @override
   void paint(Canvas canvas, Size size) {
     final wireframePaint = Paint()
@@ -324,10 +324,7 @@ class TrisPainter extends CustomPainter {
 }
 
 class DrawingController extends ChangeNotifier {
-  double time = 0.0;
-
   void add() {
-    time += 1.0;
     notifyListeners();
   }
 }

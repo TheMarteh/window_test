@@ -41,14 +41,14 @@ class _MyHomePageState extends State<MyHomePage> {
   bool paused = false;
   ObjConverter o = ObjConverter('assets/teddybear.obj');
 
-  // Stopwatch s = Stopwatch();
+  Stopwatch s = Stopwatch();
 
   // late List<ProjectedTriangle> trisToDraw = Renderer().project(Cube.MeshCube);
 
   @override
   void initState() {
     // projection matrix
-    // s.start();
+    s.start();
     // List<ProjectedTriangle> trisToDraw = Renderer().project(Cube.MeshCube);
 
     _timer = Timer.periodic(Duration(milliseconds: 33), (Timer t) {
@@ -67,6 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     _timer.cancel();
+    s.stop();
     super.dispose();
   }
 
@@ -79,10 +80,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: CustomPaint(
         size: Size(Globals.screenWidth, Globals.screenHeight),
-        painter: TrisPainter(Renderer().project(object, time / 20)),
+        painter: TrisPainter(Renderer().project(object, time / 1000)),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => paused = !paused,
+        onPressed: _pausePlay,
         tooltip: 'Play/Pause',
         child: paused ? const Icon(Icons.play_arrow) : const Icon(Icons.pause),
       ),
@@ -92,7 +93,19 @@ class _MyHomePageState extends State<MyHomePage> {
   void tick() {
     // print("Tick");
     setState(() {
-      time++;
+      // time++;
+      time = s.elapsedMilliseconds.toDouble();
+    });
+  }
+
+  void _pausePlay() {
+    setState(() {
+      paused = !paused;
+      if (paused) {
+        s.stop();
+      } else {
+        s.start();
+      }
     });
   }
 }

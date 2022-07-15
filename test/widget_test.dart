@@ -15,6 +15,6 @@ void main() {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());
     await tester.pumpAndSettle();
-    expect(find.text('View Demo Home Page'), findsOneWidget);
+    expect(find.textContaining('3D engine demo'), findsOneWidget);
   });
 }
