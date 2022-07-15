@@ -38,7 +38,8 @@ class _MyHomePageState extends State<MyHomePage> {
   double time = 100.0;
   Mesh object = Cube().MeshCube;
   late Timer _timer;
-  ObjConverter o = ObjConverter('assets/teapot.obj');
+  bool paused = false;
+  ObjConverter o = ObjConverter('assets/teddybear.obj');
 
   // Stopwatch s = Stopwatch();
 
@@ -51,19 +52,20 @@ class _MyHomePageState extends State<MyHomePage> {
     // List<ProjectedTriangle> trisToDraw = Renderer().project(Cube.MeshCube);
 
     _timer = Timer.periodic(Duration(milliseconds: 33), (Timer t) {
-      tick();
+      if (!paused) {
+        tick();
+      }
     });
 
     o.getMesh().then((Mesh obj) {
       object = obj;
       print("obj should be loaded");
-      });
+    });
     super.initState();
-
   }
 
   @override
-  void dispose(){
+  void dispose() {
     _timer.cancel();
     super.dispose();
   }
@@ -79,9 +81,9 @@ class _MyHomePageState extends State<MyHomePage> {
         painter: TrisPainter(Renderer().project(object, time / 20)),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: tick,
-        tooltip: 'Loop',
-        child: const Icon(Icons.add),
+        onPressed: () => paused = !paused,
+        tooltip: 'Play/Pause',
+        child: paused ? const Icon(Icons.play_arrow) : const Icon(Icons.pause),
       ),
     );
   }

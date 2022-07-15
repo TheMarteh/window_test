@@ -3,7 +3,6 @@ import 'package:window_test/globals.dart';
 import 'dart:math';
 import 'dart:ui';
 
-
 class Renderer {
   Vec3D multiplyMatrixVector(final Vec3D i, Vec3D o, Mat4x4 m) {
     // print("Before multiplication: " + i.x.toString());
@@ -38,16 +37,16 @@ class Renderer {
     // with material gradients
     int gradientnum = (lum.abs() * 9).round();
     List<Color> colors = [
-      Colors.blue.shade900,
-      Colors.blue.shade800,
-      Colors.blue.shade700,
-      Colors.blue.shade600,
-      Colors.blue.shade500,
-      Colors.blue.shade400,
-      Colors.blue.shade300,
-      Colors.blue.shade200,
-      Colors.blue.shade100,
-      Colors.blue.shade50,
+      Colors.green.shade900,
+      Colors.green.shade800,
+      Colors.green.shade700,
+      Colors.green.shade600,
+      Colors.green.shade500,
+      Colors.green.shade400,
+      Colors.green.shade300,
+      Colors.green.shade200,
+      Colors.green.shade100,
+      Colors.green.shade50,
     ];
     Color gradientColor = colors[gradientnum];
     Color newColor = Color.fromARGB(baseColor.alpha, baseColor.red - scalenum,
@@ -68,8 +67,8 @@ class Renderer {
     double fNear = 0.1;
     double fFar = 1000.0;
     double fFov = 90.0;
-    double fAspectRatio = (Globals.screenHeight.toDouble()) /
-        Globals.screenWidth.toDouble();
+    double fAspectRatio =
+        (Globals.screenHeight.toDouble()) / Globals.screenWidth.toDouble();
     double fFovRad = 1.0 / tan(fFov * 0.5 / 180.0 * 3.14159265);
 
     // Projection Matrix for projecting the 3d Vertices to a 2d canvas
@@ -121,9 +120,9 @@ class Renderer {
 
       // Move in Z-axis to render the cube in front of the camera
       triTranslated = triRotatedZX;
-      triTranslated.arr[0].z = triRotatedZX.arr[0].z + 8.0;
-      triTranslated.arr[1].z = triRotatedZX.arr[1].z + 8.0;
-      triTranslated.arr[2].z = triRotatedZX.arr[2].z + 8.0;
+      triTranslated.arr[0].z = triRotatedZX.arr[0].z + 40.0;
+      triTranslated.arr[1].z = triRotatedZX.arr[1].z + 40.0;
+      triTranslated.arr[2].z = triRotatedZX.arr[2].z + 40.0;
 
       Vec3D normal = Vec3D(0.0, 0.0, 0.0);
       Vec3D line1 = Vec3D(0.0, 0.0, 0.0);
@@ -186,11 +185,9 @@ class Renderer {
 
         // Scale into view
         triProjected.arr[0].x *= 0.5 * Globals.screenWidth.toDouble();
-        triProjected.arr[0].y *=
-            0.5 * Globals.screenHeight.toDouble();
+        triProjected.arr[0].y *= 0.5 * Globals.screenHeight.toDouble();
         triProjected.arr[1].x *= 0.5 * Globals.screenWidth.toDouble();
-        triProjected.arr[1].y *=
-            0.5 * Globals.screenHeight.toDouble();
+        triProjected.arr[1].y *= 0.5 * Globals.screenHeight.toDouble();
         triProjected.arr[2].x *= 0.5 * Globals.screenWidth.toDouble();
         triProjected.arr[2].y *= 0.5 * Globals.screenHeight.toDouble();
         triProjected.col = col;
@@ -259,36 +256,36 @@ class Mat4x4 {
   }
 }
 
-class ProjectedTriangle {
-  List<Offset> offsets = List<Offset>.filled(3, Offset(0.0, 0.0));
-  List<double> doubles = [];
-  Color color;
-  ProjectedTriangle(double x1, double y1, double x2, double y2, double x3,
-      double y3, this.color) {
-    offsets[0] = Offset(x1, y1);
-    offsets[1] = Offset(x2, y2);
-    offsets[2] = Offset(x3, y3);
-    doubles.add(x1);
-    doubles.add(y1);
-    doubles.add(x2);
-    doubles.add(y2);
-    doubles.add(x3);
-    doubles.add(y3);
-  }
-}
+// class ProjectedTriangle {
+//   List<Offset> offsets = List<Offset>.filled(3, Offset(0.0, 0.0));
+//   List<double> doubles = [];
+//   Color color;
+//   ProjectedTriangle(double x1, double y1, double x2, double y2, double x3,
+//       double y3, this.color) {
+//     offsets[0] = Offset(x1, y1);
+//     offsets[1] = Offset(x2, y2);
+//     offsets[2] = Offset(x3, y3);
+//     doubles.add(x1);
+//     doubles.add(y1);
+//     doubles.add(x2);
+//     doubles.add(y2);
+//     doubles.add(x3);
+//     doubles.add(y3);
+//   }
+// }
 
 class TrisPainter extends CustomPainter {
   //         <-- CustomPainter class
   // final List<ProjectedTriangle> trisToDraw;
   final List<Triangle> trisToRaster;
   bool wireframing;
-  TrisPainter(this.trisToRaster, {this.wireframing = false})
+  TrisPainter(this.trisToRaster, {this.wireframing = true})
       : super(repaint: DrawingController());
   @override
   void paint(Canvas canvas, Size size) {
     final wireframePaint = Paint()
       ..color = Colors.black
-      ..strokeWidth = 1;
+      ..strokeWidth = 0.2;
 
     trisToRaster.sort((t1, t2) {
       double z1 = (t1.arr[0].z + t1.arr[1].z + t1.arr[2].z) / 3.0;

@@ -27,11 +27,12 @@ class ObjConverter {
       if (line[0] == "f") {
         List<String> splitted = line.split(" ");
         List<int> p = [
-          int.parse(splitted[1]),
-          int.parse(splitted[2]),
-          int.parse(splitted[3])
+          int.parse(splitted[1].split("/")[0]),
+          int.parse(splitted[2].split("/")[0]),
+          int.parse(splitted[3].split("/")[0])
         ];
-        tris.add(Triangle(vertices[p[0] - 1], vertices[p[1] - 1], vertices[p[2] - 1]));
+        tris.add(Triangle(
+            vertices[p[0] - 1], vertices[p[1] - 1], vertices[p[2] - 1]));
       }
 
       // Triangle tri = Triangle(p1, p2, p3)
