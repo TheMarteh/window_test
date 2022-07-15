@@ -17,9 +17,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'View Demo',
+      title: '3D engine Demo',
       theme: ThemeData(primarySwatch: Colors.blueGrey),
-      home: MyHomePage(title: 'View Demo Home Page'),
+      home: MyHomePage(title: '3D engine demo'),
     );
   }
 }
@@ -74,7 +74,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(
+            widget.title + " - Polygons: " + object.tris.length.toString()),
       ),
       body: CustomPaint(
         size: Size(Globals.screenWidth, Globals.screenHeight),
