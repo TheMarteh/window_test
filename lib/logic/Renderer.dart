@@ -194,13 +194,15 @@ class Renderer {
 
     double theta = 1.0 * time;
 
-    Mat4x4 matRotZ = Matrix_MakeRotationZ(theta * 0.5);
-    Mat4x4 matRotX = Matrix_MakeRotationX(theta * 0.1);
+    Mat4x4 matRotZ = Matrix_MakeRotationZ(theta * 1.0);
+    Mat4x4 matRotX = Matrix_MakeRotationX(theta * 0.5);
+    Mat4x4 matRotY = Matrix_MakeRotationY(theta * 0.0);
 
-    Mat4x4 matTrans = Matrix_MakeTranslation(1.0, 1.0, 5.0);
+    Mat4x4 matTrans = Matrix_MakeTranslation(0.0, 0.0, 40.0);
 
     Mat4x4 matWorld = Matrix_MakeIdentity();
     matWorld = Matrix_MultiplyMatrix(matRotZ, matRotX);
+    matWorld = Matrix_MultiplyMatrix(matWorld, matRotY);
     matWorld = Matrix_MultiplyMatrix(matWorld, matTrans);
 
     for (Triangle tri in mesh.tris) {

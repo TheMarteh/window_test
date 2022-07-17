@@ -38,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Mesh object = Cube().MeshCube;
   late Timer _timer;
   bool paused = false;
-  ObjConverter o = ObjConverter('assets/teapot.obj');
+  ObjConverter o = ObjConverter('assets/teddybear.obj');
 
   Stopwatch s = Stopwatch();
 
