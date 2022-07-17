@@ -5,7 +5,6 @@ import 'package:window_test/logic/ObjConverter.dart';
 import 'package:window_test/logic/Renderer.dart';
 
 import 'dart:async';
-import 'dart:ui';
 
 void main() {
   runApp(const MyApp());
@@ -19,13 +18,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: '3D engine Demo',
       theme: ThemeData(primarySwatch: Colors.blueGrey),
-      home: MyHomePage(title: '3D engine demo'),
+      home: const MyHomePage(title: '3D engine demo'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
 
   @override
@@ -35,7 +34,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   // List<Polygon> polys = [];
   List<Offset> pointsToDraw = [];
-  double time = 100.0;
+  double time = 0.0;
   Mesh object = Cube().MeshCube;
   late Timer _timer;
   bool paused = false;
@@ -47,11 +46,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    // projection matrix
     s.start();
-    // List<ProjectedTriangle> trisToDraw = Renderer().project(Cube.MeshCube);
-
-    _timer = Timer.periodic(Duration(milliseconds: 33), (Timer t) {
+    _timer = Timer.periodic(const Duration(milliseconds: 33), (Timer t) {
       if (!paused) {
         tick();
       }
@@ -75,8 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            widget.title + " - Polygons: " + object.tris.length.toString()),
+        title: Text("${widget.title} - Polygons: ${object.tris.length}"),
       ),
       body: CustomPaint(
         size: Size(Globals.screenWidth, Globals.screenHeight),
@@ -93,7 +88,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void tick() {
     // print("Tick");
     setState(() {
-      // time++;
       time = s.elapsedMilliseconds.toDouble();
     });
   }
@@ -101,18 +95,18 @@ class _MyHomePageState extends State<MyHomePage> {
   void _pausePlay() {
     setState(() {
       paused = !paused;
-      if (paused) {
-        s.stop();
-      } else {
-        s.start();
-      }
     });
+    if (paused) {
+      s.stop();
+    } else {
+      s.start();
+    }
   }
 }
 
 class Point {
   double x, y;
-  Point(this.x, this.y) {}
+  Point(this.x, this.y);
 }
 
 // NEW STYLE

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:window_test/globals.dart';
 import 'dart:math';
-import 'dart:ui';
 
 class Renderer {
   Vec3D multiplyMatrixVector(final Vec3D i, Vec3D o, Mat4x4 m) {
@@ -210,14 +209,10 @@ class Renderer {
 }
 
 class Vec3D {
-  late double x;
-  late double y;
-  late double z;
-  Vec3D(double x, double y, double z) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-  }
+  double x;
+  double y;
+  double z;
+  Vec3D(this.x, this.y, this.z);
 }
 
 class Triangle {
@@ -306,7 +301,7 @@ class TrisPainter extends CustomPainter {
       canvas.drawPath(path, paint);
 
       // Wireframe painting
-      if (this.wireframing == true) {
+      if (wireframing == true) {
         canvas.drawLine(Offset(tri.arr[0].x, tri.arr[0].y),
             Offset(tri.arr[1].x, tri.arr[1].y), wireframePaint);
         canvas.drawLine(Offset(tri.arr[1].x, tri.arr[1].y),
@@ -318,7 +313,7 @@ class TrisPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CustomPainter old) {
+  bool shouldRepaint(CustomPainter oldDelegate) {
     return true;
   }
 }
