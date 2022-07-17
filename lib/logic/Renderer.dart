@@ -3,29 +3,155 @@ import 'package:window_test/globals.dart';
 import 'dart:math';
 
 class Renderer {
-  Vec3D multiplyMatrixVector(final Vec3D i, Vec3D o, Mat4x4 m) {
-    // print("Before multiplication: " + i.x.toString());
-    double x = i.x.toDouble();
-    double y = i.y.toDouble();
-    double z = i.z.toDouble();
+  Vec3D Matrix_MultiplyVector(Mat4x4 m, Vec3D i) {
+    Vec3D v = Vec3D(0, 0, 0);
 
-    o.x = (i.x * m.m[0][0]) + (i.y * m.m[1][0]) + (i.z * m.m[2][0]) + m.m[3][0];
-    // print("After o.x: " + i.x.toString());
-
-    o.y = (i.x * m.m[0][1]) + (i.y * m.m[1][1]) + (i.z * m.m[2][1]) + m.m[3][1];
-    o.z = (i.x * m.m[0][2]) + (i.y * m.m[1][2]) + (i.z * m.m[2][2]) + m.m[3][2];
+    v.x = (i.x * m.m[0][0]) +
+        (i.y * m.m[1][0]) +
+        (i.z * m.m[2][0]) +
+        (i.w * m.m[3][0]);
+    v.y = (i.x * m.m[0][1]) +
+        (i.y * m.m[1][1]) +
+        (i.z * m.m[2][1]) +
+        (i.w * m.m[3][1]);
+    v.z = (i.x * m.m[0][2]) +
+        (i.y * m.m[1][2]) +
+        (i.z * m.m[2][2]) +
+        (i.w * m.m[3][2]);
+    v.w = (i.x * m.m[0][3]) +
+        (i.y * m.m[1][3]) +
+        (i.z * m.m[2][3]) +
+        (i.w * m.m[3][3]);
+    return v;
 
     // print("After multiplication: " + i.x.toString());
     // print("After testing: " + i.x.toString());
 
-    double w =
-        (i.x * m.m[0][3]) + (i.y * m.m[1][3]) + (i.z * m.m[2][3]) + m.m[3][3];
-    if (w != 0.0) {
-      o.x /= w;
-      o.y /= w;
-      o.z /= w;
+    // double w =
+    //     (i.x * m.m[0][3]) + (i.y * m.m[1][3]) + (i.z * m.m[2][3]) + m.m[3][3];
+    // if (w != 0.0) {
+    //   o.x /= w;
+    //   o.y /= w;
+    //   o.z /= w;
+    // }
+    // return Vec3D(o.x, o.y, o.z);
+  }
+
+  Mat4x4 Matrix_MakeIdentity() {
+    Mat4x4 matrix = Mat4x4();
+    matrix.m[0][0] = 1.0;
+    matrix.m[1][1] = 1.0;
+    matrix.m[2][2] = 1.0;
+    matrix.m[3][3] = 1.0;
+    return matrix;
+  }
+
+  Mat4x4 Matrix_MakeRotationX(double angleRad) {
+    Mat4x4 matrix = Mat4x4();
+    matrix.m[0][0] = 1.0;
+    matrix.m[1][1] = cos(angleRad);
+    matrix.m[1][2] = sin(angleRad);
+    matrix.m[2][1] = -sin(angleRad);
+    matrix.m[2][2] = cos(angleRad);
+    matrix.m[3][3] = 1.0;
+    return matrix;
+  }
+
+  Mat4x4 Matrix_MakeRotationY(double angleRad) {
+    Mat4x4 matrix = Mat4x4();
+    matrix.m[0][0] = cos(angleRad);
+    matrix.m[0][2] = sin(angleRad);
+    matrix.m[2][0] = -sin(angleRad);
+    matrix.m[1][1] = 1.0;
+    matrix.m[2][2] = cos(angleRad);
+    matrix.m[3][3] = 1.0;
+    return matrix;
+  }
+
+  Mat4x4 Matrix_MakeRotationZ(double angleRad) {
+    Mat4x4 matrix = Mat4x4();
+    matrix.m[0][0] = cos(angleRad);
+    matrix.m[0][1] = sin(angleRad);
+    matrix.m[1][0] = -sin(angleRad);
+    matrix.m[1][1] = cos(angleRad);
+    matrix.m[2][2] = 1.0;
+    matrix.m[3][3] = 1.0;
+    return matrix;
+  }
+
+  Mat4x4 Matrix_MakeTranslation(double x, double y, double z) {
+    Mat4x4 matrix = Mat4x4();
+    matrix.m[0][0] = 1.0;
+    matrix.m[1][1] = 1.0;
+    matrix.m[2][2] = 1.0;
+    matrix.m[3][3] = 1.0;
+    matrix.m[3][0] = x;
+    matrix.m[3][1] = y;
+    matrix.m[3][2] = z;
+    return matrix;
+  }
+
+  Mat4x4 Matrix_MakeProjection(
+      double fovDegrees, double aspectRatio, double near, double far) {
+    double fovRad = 1.0 / tan(fovDegrees * 0.5 / 180.0 * 3.14159265);
+    Mat4x4 matrix = Mat4x4();
+    matrix.m[0][0] = aspectRatio * fovRad;
+    matrix.m[1][1] = fovRad;
+    matrix.m[2][2] = far / (far - near);
+    matrix.m[3][2] = (-far * near) / (far - near);
+    matrix.m[2][3] = 1.0;
+    matrix.m[3][3] = 0.0;
+    return matrix;
+  }
+
+  Mat4x4 Matrix_MultiplyMatrix(Mat4x4 m1, Mat4x4 m2) {
+    Mat4x4 matrix = Mat4x4();
+    for (int c = 0; c < 4; c++) {
+      for (int r = 0; r < 4; r++) {
+        matrix.m[r][c] = m1.m[r][0] * m2.m[0][c] +
+            m1.m[r][1] * m2.m[1][c] +
+            m1.m[r][2] * m2.m[2][c] +
+            m1.m[r][3] * m2.m[3][c];
+      }
     }
-    return Vec3D(x, y, z);
+    return matrix;
+  }
+
+  Vec3D Vector_Add(Vec3D v1, Vec3D v2) {
+    return Vec3D(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+  }
+
+  Vec3D Vector_Sub(Vec3D v1, Vec3D v2) {
+    return Vec3D(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+  }
+
+  Vec3D Vector_Mul(Vec3D v1, double k) {
+    return Vec3D(v1.x * k, v1.y * k, v1.z * k);
+  }
+
+  Vec3D Vector_Div(Vec3D v1, double k) {
+    return Vec3D(v1.x / k, v1.y / k, v1.z / k);
+  }
+
+  double Vector_DotProduct(Vec3D v1, Vec3D v2) {
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+  }
+
+  double Vector_Length(Vec3D v) {
+    return sqrt(Vector_DotProduct(v, v));
+  }
+
+  Vec3D Vector_Normalize(Vec3D v) {
+    double l = Vector_Length(v);
+    return Vec3D(v.x / l, v.y / l, v.z / l);
+  }
+
+  Vec3D Vector_CrossProduct(Vec3D v1, Vec3D v2) {
+    Vec3D v = Vec3D(0, 0, 0);
+    v.x = v1.y * v2.z - v1.z * v2.y;
+    v.y = v1.z * v2.x - v1.x * v2.z;
+    v.z = v1.x * v2.y - v1.y * v2.x;
+    return v;
   }
 
   Color calculateColor(double lum) {
@@ -57,130 +183,76 @@ class Renderer {
   List<Triangle> project(Mesh mesh, double time) {
     // List<ProjectedTriangle> trisToDraw = [];
     List<Triangle> trisToRaster = [];
-    Mat4x4 matProj = Mat4x4();
+    Mat4x4 matProj = Matrix_MakeProjection(
+        90,
+        (Globals.screenHeight.toDouble()) / Globals.screenWidth.toDouble(),
+        0.1,
+        1000);
 
     // camera placeholder
     Vec3D vCamera = Vec3D(0.0, 0.0, 0.0);
-    Vec3D light_direction = Vec3D(0.0, 0.0, -1.0);
 
-    double fNear = 0.1;
-    double fFar = 1000.0;
-    double fFov = 90.0;
-    double fAspectRatio =
-        (Globals.screenHeight.toDouble()) / Globals.screenWidth.toDouble();
-    double fFovRad = 1.0 / tan(fFov * 0.5 / 180.0 * 3.14159265);
+    double theta = 1.0 * time;
 
-    // Projection Matrix for projecting the 3d Vertices to a 2d canvas
-    matProj.m[0][0] = fAspectRatio * fFovRad;
-    matProj.m[1][1] = fFovRad;
-    matProj.m[2][2] = fFar / (fFar - fNear);
-    matProj.m[3][2] = (-fFar * fNear) / (fFar - fNear);
-    matProj.m[2][3] = 1.0;
-    matProj.m[3][3] = 0.0;
+    Mat4x4 matRotZ = Matrix_MakeRotationZ(theta * 0.5);
+    Mat4x4 matRotX = Matrix_MakeRotationX(theta * 0.1);
 
-    Mat4x4 matRotZ = Mat4x4();
-    Mat4x4 matRotX = Mat4x4();
+    Mat4x4 matTrans = Matrix_MakeTranslation(1.0, 1.0, 5.0);
 
-    double fTheta = 1.0 * time;
-
-    // Rotation Matrix for Z axis
-    matRotZ.m[0][0] = cos(fTheta);
-    matRotZ.m[0][1] = sin(fTheta);
-    matRotZ.m[1][0] = -sin(fTheta);
-    matRotZ.m[1][1] = cos(fTheta);
-    matRotZ.m[2][2] = 1;
-    matRotZ.m[3][3] = 1;
-
-    // Rotation Matrix for X axis
-    matRotX.m[0][0] = 1;
-    matRotX.m[1][1] = cos(fTheta * 0.3);
-    matRotX.m[1][2] = sin(fTheta * 0.3);
-    matRotX.m[2][1] = -sin(fTheta * 0.3);
-    matRotX.m[2][2] = cos(fTheta * 0.3);
-    matRotX.m[3][3] = 1;
+    Mat4x4 matWorld = Matrix_MakeIdentity();
+    matWorld = Matrix_MultiplyMatrix(matRotZ, matRotX);
+    matWorld = Matrix_MultiplyMatrix(matWorld, matTrans);
 
     for (Triangle tri in mesh.tris) {
       // initialize Triangles to work with
       Triangle triToWorkWith = tri;
       Triangle triProjected = Triangle.empty();
-      Triangle triTranslated = Triangle.empty();
-      Triangle triRotatedZ = Triangle.empty();
-      Triangle triRotatedZX = Triangle.empty();
+      Triangle triTransformed = Triangle.empty();
 
-      // Rotate in z axis
-      multiplyMatrixVector(triToWorkWith.arr[0], triRotatedZ.arr[0], matRotZ);
-      multiplyMatrixVector(triToWorkWith.arr[1], triRotatedZ.arr[1], matRotZ);
-      multiplyMatrixVector(triToWorkWith.arr[2], triRotatedZ.arr[2], matRotZ);
+      triTransformed.arr[0] = Matrix_MultiplyVector(matWorld, tri.arr[0]);
+      triTransformed.arr[1] = Matrix_MultiplyVector(matWorld, tri.arr[1]);
+      triTransformed.arr[2] = Matrix_MultiplyVector(matWorld, tri.arr[2]);
 
-      // Rotate in X axis
-      multiplyMatrixVector(triRotatedZ.arr[0], triRotatedZX.arr[0], matRotX);
-      multiplyMatrixVector(triRotatedZ.arr[1], triRotatedZX.arr[1], matRotX);
-      multiplyMatrixVector(triRotatedZ.arr[2], triRotatedZX.arr[2], matRotX);
-
-      // Move in Z-axis to render the cube in front of the camera
-      triTranslated = triRotatedZX;
-      triTranslated.arr[0].z = triRotatedZX.arr[0].z + 40.0;
-      triTranslated.arr[1].z = triRotatedZX.arr[1].z + 40.0;
-      triTranslated.arr[2].z = triRotatedZX.arr[2].z + 40.0;
-
-      Vec3D normal = Vec3D(0.0, 0.0, 0.0);
-      Vec3D line1 = Vec3D(0.0, 0.0, 0.0);
-      Vec3D line2 = Vec3D(0.0, 0.0, 0.0);
-
-      // calculate the normal
-      line1.x = triTranslated.arr[1].x - triTranslated.arr[0].x;
-      line1.y = triTranslated.arr[1].y - triTranslated.arr[0].y;
-      line1.z = triTranslated.arr[1].z - triTranslated.arr[0].z;
-
-      line2.x = triTranslated.arr[2].x - triTranslated.arr[0].x;
-      line2.y = triTranslated.arr[2].y - triTranslated.arr[0].y;
-      line2.z = triTranslated.arr[2].z - triTranslated.arr[0].z;
-
-      normal.x = line1.y * line2.z - line1.z * line2.y;
-      normal.y = line1.z * line2.x - line1.x * line2.z;
-      normal.z = line1.x * line2.y - line1.y * line2.x;
-
-      double l =
-          sqrt(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
-      normal.x /= l;
-      normal.y /= l;
-      normal.z /= l;
+      Vec3D line1 = Vector_Sub(triTransformed.arr[1], triTransformed.arr[0]);
+      Vec3D line2 = Vector_Sub(triTransformed.arr[2], triTransformed.arr[0]);
+      Vec3D normal = Vector_CrossProduct(line1, line2);
+      normal = Vector_Normalize(normal);
 
       // The normal is used to check if the triangle is actually facing the
       // camera or not
-      if (normal.x * (triTranslated.arr[0].x - vCamera.x) +
-              normal.y * (triTranslated.arr[0].y - vCamera.y) +
-              normal.z * (triTranslated.arr[0].z - vCamera.z) <
-          0.0) {
-        // illumination
-        double l = sqrt(light_direction.x * light_direction.x +
-            light_direction.y * light_direction.y +
-            light_direction.z * light_direction.z);
-        light_direction.x /= l;
-        light_direction.y /= l;
-        light_direction.z /= l;
+      Vec3D vCameraRay = Vector_Sub(triTransformed.arr[0], vCamera);
 
-        double dp = normal.x * light_direction.x +
-            normal.y * light_direction.y +
-            normal.z * light_direction.z;
+      if (Vector_DotProduct(normal, vCameraRay) < 0.0) {
+        // illumination
+        Vec3D light_direction = Vec3D(0.0, 1.0, -1.0);
+
+        double dp =
+            min(max(0.1, Vector_DotProduct(light_direction, normal)), 1.0);
 
         Color col = calculateColor(dp);
+        triTransformed.col = col;
 
         // Project the 3d-Triangles to a 2d space
-        multiplyMatrixVector(
-            triTranslated.arr[0], triProjected.arr[0], matProj);
-        multiplyMatrixVector(
-            triTranslated.arr[1], triProjected.arr[1], matProj);
-        multiplyMatrixVector(
-            triTranslated.arr[2], triProjected.arr[2], matProj);
 
-        // Move into screen
-        triProjected.arr[0].x += 1.0;
-        triProjected.arr[0].y += 1.0;
-        triProjected.arr[1].x += 1.0;
-        triProjected.arr[1].y += 1.0;
-        triProjected.arr[2].x += 1.0;
-        triProjected.arr[2].y += 1.0;
+        triProjected.arr[0] =
+            Matrix_MultiplyVector(matProj, triTransformed.arr[0]);
+        triProjected.arr[1] =
+            Matrix_MultiplyVector(matProj, triTransformed.arr[1]);
+        triProjected.arr[2] =
+            Matrix_MultiplyVector(matProj, triTransformed.arr[2]);
+        triProjected.col = triTransformed.col;
+
+        triProjected.arr[0] =
+            Vector_Div(triProjected.arr[0], triProjected.arr[0].w);
+        triProjected.arr[1] =
+            Vector_Div(triProjected.arr[1], triProjected.arr[1].w);
+        triProjected.arr[2] =
+            Vector_Div(triProjected.arr[2], triProjected.arr[2].w);
+
+        Vec3D vOffsetView = Vec3D(1, 1, 0);
+        triProjected.arr[0] = Vector_Add(triProjected.arr[0], vOffsetView);
+        triProjected.arr[1] = Vector_Add(triProjected.arr[1], vOffsetView);
+        triProjected.arr[2] = Vector_Add(triProjected.arr[2], vOffsetView);
 
         // Scale into view
         triProjected.arr[0].x *= 0.5 * Globals.screenWidth.toDouble();
@@ -192,16 +264,6 @@ class Renderer {
         triProjected.col = col;
 
         trisToRaster.add(triProjected);
-
-        // // Draw Triangles
-        // trisToDraw.add(ProjectedTriangle(
-        //     triProjected.arr[0].x,
-        //     triProjected.arr[0].y,
-        //     triProjected.arr[1].x,
-        //     triProjected.arr[1].y,
-        //     triProjected.arr[2].x,
-        //     triProjected.arr[2].y,
-        //     col));
       }
     }
     return trisToRaster;
@@ -212,6 +274,7 @@ class Vec3D {
   double x;
   double y;
   double z;
+  double w = 1;
   Vec3D(this.x, this.y, this.z);
 }
 
