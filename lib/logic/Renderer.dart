@@ -10,6 +10,7 @@ class Renderer {
   // camera placeholder
   Vec3D vCamera = Vec3D(0.0, 0.0, 0.0);
   Vec3D vLookDirection = Vec3D(0, 0, 1);
+  double theta = 0.0;
 
   Mat4x4 matProj = Renderer.Matrix_MakeProjection(
       90,
@@ -261,26 +262,26 @@ class Renderer {
     if (inputs.forwardButton == 1) {
       print("Forward is pressed");
       // move up
-      vCamera.y += 0.2;
+      vCamera.y += 10.0 * time;
     }
 
     if (inputs.backwardButton == 1) {
       print("Backward is pressed");
       // move down
-      vCamera.y -= 0.2;
+      vCamera.y -= 10.0 * time;
     }
 
     if (inputs.leftButton == 1) {
       // strafe left
-      vCamera.x += 0.2;
+      vCamera.x += 10.0 * time;
     }
 
     if (inputs.rightButton == 1) {
       // strafe right
-      vCamera.x -= 0.2;
+      vCamera.x -= 10.0 * time;
     }
 
-    double theta = 0.5 * time;
+    theta += 0.5 * time;
     // double theta = 0.0;
 
     Mat4x4 matRotZ = Matrix_MakeRotationZ(theta * 0);

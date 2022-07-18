@@ -114,6 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // print("Tick");
     setState(() {
       time = s.elapsedMilliseconds.toDouble();
+      s.reset();
     });
   }
 
