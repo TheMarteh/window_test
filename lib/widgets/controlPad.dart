@@ -157,9 +157,12 @@ class ControlPadInputs {
         backwardButton = 0;
       },
       depressLeft: () {
+        // print("depressedL");
         leftButton = 0;
       },
       depressRight: () {
+        // print("depressedR");
+
         rightButton = 0;
       },
     );

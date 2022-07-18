@@ -3,6 +3,7 @@ import 'package:window_test/globals.dart';
 import 'package:window_test/logic/Cube.dart';
 import 'package:window_test/logic/ObjConverter.dart';
 import 'package:window_test/logic/Renderer.dart';
+import "package:universal_html/html.dart" as html;
 
 import 'dart:async';
 
@@ -51,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     s.start();
-    _timer = Timer.periodic(const Duration(milliseconds: 33), (Timer t) {
+    _timer = Timer.periodic(const Duration(milliseconds: 16), (Timer t) {
       if (!paused) {
         tick();
       }
@@ -63,6 +64,9 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     inputs = ControlPadInputs();
     renderer = Renderer();
+
+    html.document.body!
+        .addEventListener('contextmenu', (event) => event.preventDefault());
     super.initState();
   }
 

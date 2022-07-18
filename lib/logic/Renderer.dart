@@ -272,20 +272,20 @@ class Renderer {
 
     if (inputs.leftButton == 1) {
       // strafe left
-      vCamera.x -= 2.0;
+      vCamera.x += 2.0;
     }
 
     if (inputs.rightButton == 1) {
       // strafe right
-      vCamera.x += 2.0;
+      vCamera.x -= 2.0;
     }
 
-    // double theta = 0.0 * time;
-    double theta = 0.0;
+    double theta = 0.5 * time;
+    // double theta = 0.0;
 
-    Mat4x4 matRotZ = Matrix_MakeRotationZ(theta * 1.0);
-    Mat4x4 matRotX = Matrix_MakeRotationX(theta * 0.5);
-    Mat4x4 matRotY = Matrix_MakeRotationY(pi);
+    Mat4x4 matRotZ = Matrix_MakeRotationZ(theta * 0);
+    Mat4x4 matRotX = Matrix_MakeRotationX(theta * 0);
+    Mat4x4 matRotY = Matrix_MakeRotationY(theta * 0.5);
 
     Mat4x4 matTrans = Matrix_MakeTranslation(0.0, 0.0, zOffSet);
 

@@ -6,12 +6,16 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 // import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:window_test/main.dart';
 
+import 'test_helpers.dart';
+
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+    FlutterError.onError = ignoreOverflowErrors;
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());
     await tester.pumpAndSettle();
