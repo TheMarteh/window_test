@@ -6,6 +6,8 @@ import 'package:window_test/logic/Renderer.dart';
 
 import 'dart:async';
 
+import 'package:window_test/widgets/controlPad.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -38,6 +40,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Mesh object = Cube().MeshCube;
   late Timer _timer;
   bool paused = false;
+  late ControlPadInputs inputs;
+  late Renderer renderer;
   ObjConverter o = ObjConverter('assets/teddybear.obj');
 
   Stopwatch s = Stopwatch();
@@ -57,6 +61,8 @@ class _MyHomePageState extends State<MyHomePage> {
       object = obj;
       print("obj should be loaded");
     });
+    inputs = ControlPadInputs();
+    renderer = Renderer();
     super.initState();
   }
 
@@ -73,9 +79,14 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text("${widget.title} - Polygons: ${object.tris.length}"),
       ),
-      body: CustomPaint(
-        size: Size(Globals.screenWidth, Globals.screenHeight),
-        painter: TrisPainter(Renderer().project(object, time / 1000)),
+      body: Column(
+        children: [
+          CustomPaint(
+            size: Size(Globals.screenWidth, Globals.screenHeight),
+            painter: TrisPainter(renderer.project(object, time / 1000, inputs)),
+          ),
+          inputs.widget(),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _pausePlay,

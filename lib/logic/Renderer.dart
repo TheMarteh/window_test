@@ -2,7 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:window_test/globals.dart';
 import 'dart:math';
 
+import 'package:window_test/widgets/controlPad.dart';
+
 class Renderer {
+  double zOffSet = 30;
+
+  // camera placeholder
+  Vec3D vCamera = Vec3D(0.0, 0.0, 0.0);
+  Vec3D vLookDirection = Vec3D(0, 0, 1);
+
+  Mat4x4 matProj = Renderer.Matrix_MakeProjection(
+      90,
+      (Globals.screenHeight.toDouble()) / Globals.screenWidth.toDouble(),
+      0.1,
+      1000);
+
   Vec3D Matrix_MultiplyVector(Mat4x4 m, Vec3D i) {
     Vec3D v = Vec3D(0, 0, 0);
 
@@ -91,7 +105,7 @@ class Renderer {
     return matrix;
   }
 
-  Mat4x4 Matrix_MakeProjection(
+  static Mat4x4 Matrix_MakeProjection(
       double fovDegrees, double aspectRatio, double near, double far) {
     double fovRad = 1.0 / tan(fovDegrees * 0.5 / 180.0 * 3.14159265);
     Mat4x4 matrix = Mat4x4();
@@ -114,6 +128,64 @@ class Renderer {
             m1.m[r][3] * m2.m[3][c];
       }
     }
+    return matrix;
+  }
+
+  Mat4x4 Matrix_PointAt(Vec3D pos, Vec3D target, Vec3D up) {
+    Vec3D newForward = Vector_Sub(target, pos);
+    newForward = Vector_Normalize(newForward);
+
+    Vec3D a = Vector_Mul(newForward, Vector_DotProduct(up, newForward));
+    Vec3D newUp = Vector_Sub(up, a);
+    newUp = Vector_Normalize(newUp);
+
+    Vec3D newRight = Vector_CrossProduct(newUp, newForward);
+
+    Mat4x4 matrix = Mat4x4();
+    matrix.m[0][0] = newRight.x;
+    matrix.m[0][1] = newRight.y;
+    matrix.m[0][2] = newRight.z;
+    matrix.m[0][3] = 0.0;
+    matrix.m[1][0] = newUp.x;
+    matrix.m[1][1] = newUp.y;
+    matrix.m[1][2] = newUp.z;
+    matrix.m[1][3] = 0.0;
+    matrix.m[2][0] = newForward.x;
+    matrix.m[2][1] = newForward.y;
+    matrix.m[2][2] = newForward.z;
+    matrix.m[2][3] = 0.0;
+    matrix.m[3][0] = pos.x;
+    matrix.m[3][1] = pos.y;
+    matrix.m[3][2] = pos.z;
+    matrix.m[3][3] = 1.0;
+    return matrix;
+  }
+
+  Mat4x4 Matrix_QuickInverse(Mat4x4 m) // Only for Rotation/Translation Matrices
+  {
+    Mat4x4 matrix = Mat4x4();
+    matrix.m[0][0] = m.m[0][0];
+    matrix.m[0][1] = m.m[1][0];
+    matrix.m[0][2] = m.m[2][0];
+    matrix.m[0][3] = 0.0;
+    matrix.m[1][0] = m.m[0][1];
+    matrix.m[1][1] = m.m[1][1];
+    matrix.m[1][2] = m.m[2][1];
+    matrix.m[1][3] = 0.0;
+    matrix.m[2][0] = m.m[0][2];
+    matrix.m[2][1] = m.m[1][2];
+    matrix.m[2][2] = m.m[2][2];
+    matrix.m[2][3] = 0.0;
+    matrix.m[3][0] = -(m.m[3][0] * matrix.m[0][0] +
+        m.m[3][1] * matrix.m[1][0] +
+        m.m[3][2] * matrix.m[2][0]);
+    matrix.m[3][1] = -(m.m[3][0] * matrix.m[0][1] +
+        m.m[3][1] * matrix.m[1][1] +
+        m.m[3][2] * matrix.m[2][1]);
+    matrix.m[3][2] = -(m.m[3][0] * matrix.m[0][2] +
+        m.m[3][1] * matrix.m[1][2] +
+        m.m[3][2] * matrix.m[2][2]);
+    matrix.m[3][3] = 1.0;
     return matrix;
   }
 
@@ -180,36 +252,61 @@ class Renderer {
     return gradientColor;
   }
 
-  List<Triangle> project(Mesh mesh, double time) {
+  List<Triangle> project(Mesh mesh, double time, ControlPadInputs inputs) {
+    // print(keyPress);
+
     // List<ProjectedTriangle> trisToDraw = [];
     List<Triangle> trisToRaster = [];
-    Mat4x4 matProj = Matrix_MakeProjection(
-        90,
-        (Globals.screenHeight.toDouble()) / Globals.screenWidth.toDouble(),
-        0.1,
-        1000);
 
-    // camera placeholder
-    Vec3D vCamera = Vec3D(0.0, 0.0, 0.0);
+    if (inputs.forwardButton == 1) {
+      print("Forward is pressed");
+      // move up
+      vCamera.y += 2.0;
+    }
 
-    double theta = 1.0 * time;
+    if (inputs.backwardButton == 1) {
+      print("Backward is pressed");
+      // move down
+      vCamera.y -= 2.0;
+    }
+
+    if (inputs.leftButton == 1) {
+      // strafe left
+      vCamera.x -= 2.0;
+    }
+
+    if (inputs.rightButton == 1) {
+      // strafe right
+      vCamera.x += 2.0;
+    }
+
+    // double theta = 0.0 * time;
+    double theta = 0.0;
 
     Mat4x4 matRotZ = Matrix_MakeRotationZ(theta * 1.0);
     Mat4x4 matRotX = Matrix_MakeRotationX(theta * 0.5);
-    Mat4x4 matRotY = Matrix_MakeRotationY(theta * 0.0);
+    Mat4x4 matRotY = Matrix_MakeRotationY(pi);
 
-    Mat4x4 matTrans = Matrix_MakeTranslation(0.0, 0.0, 40.0);
+    Mat4x4 matTrans = Matrix_MakeTranslation(0.0, 0.0, zOffSet);
 
     Mat4x4 matWorld = Matrix_MakeIdentity();
     matWorld = Matrix_MultiplyMatrix(matRotZ, matRotX);
     matWorld = Matrix_MultiplyMatrix(matWorld, matRotY);
     matWorld = Matrix_MultiplyMatrix(matWorld, matTrans);
 
+    Vec3D vUp = Vec3D(0, 1, 0);
+    Vec3D vTarget = Vector_Add(vCamera, vLookDirection);
+
+    Mat4x4 matCamera = Matrix_PointAt(vCamera, vTarget, vUp);
+
+    Mat4x4 matView = Matrix_QuickInverse(matCamera);
+
     for (Triangle tri in mesh.tris) {
       // initialize Triangles to work with
       Triangle triToWorkWith = tri;
       Triangle triProjected = Triangle.empty();
       Triangle triTransformed = Triangle.empty();
+      Triangle triViewed = Triangle.empty();
 
       triTransformed.arr[0] = Matrix_MultiplyVector(matWorld, tri.arr[0]);
       triTransformed.arr[1] = Matrix_MultiplyVector(matWorld, tri.arr[1]);
@@ -234,14 +331,18 @@ class Renderer {
         Color col = calculateColor(dp);
         triTransformed.col = col;
 
-        // Project the 3d-Triangles to a 2d space
+        // Convert World space into view space
+        triViewed.arr[0] =
+            Matrix_MultiplyVector(matView, triTransformed.arr[0]);
+        triViewed.arr[1] =
+            Matrix_MultiplyVector(matView, triTransformed.arr[1]);
+        triViewed.arr[2] =
+            Matrix_MultiplyVector(matView, triTransformed.arr[2]);
 
-        triProjected.arr[0] =
-            Matrix_MultiplyVector(matProj, triTransformed.arr[0]);
-        triProjected.arr[1] =
-            Matrix_MultiplyVector(matProj, triTransformed.arr[1]);
-        triProjected.arr[2] =
-            Matrix_MultiplyVector(matProj, triTransformed.arr[2]);
+        // Project the 3d-Triangles to a 2d space
+        triProjected.arr[0] = Matrix_MultiplyVector(matProj, triViewed.arr[0]);
+        triProjected.arr[1] = Matrix_MultiplyVector(matProj, triViewed.arr[1]);
+        triProjected.arr[2] = Matrix_MultiplyVector(matProj, triViewed.arr[2]);
         triProjected.col = triTransformed.col;
 
         triProjected.arr[0] =
@@ -250,6 +351,13 @@ class Renderer {
             Vector_Div(triProjected.arr[1], triProjected.arr[1].w);
         triProjected.arr[2] =
             Vector_Div(triProjected.arr[2], triProjected.arr[2].w);
+
+        triProjected.arr[0].x *= -1.0;
+        triProjected.arr[1].x *= -1.0;
+        triProjected.arr[2].x *= -1.0;
+        triProjected.arr[0].y *= -1.0;
+        triProjected.arr[1].y *= -1.0;
+        triProjected.arr[2].y *= -1.0;
 
         Vec3D vOffsetView = Vec3D(1, 1, 0);
         triProjected.arr[0] = Vector_Add(triProjected.arr[0], vOffsetView);
