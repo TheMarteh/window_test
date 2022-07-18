@@ -41199,9 +41199,9 @@ q.c=r*m-p*s
 return q},
 OP(c2,c3,c4){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c,b,a,a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,b0,b1,b2,b3,b4,b5,b6,b7,b8,b9=this,c0="m",c1=A.a([],t.a9)
 if(c4.a===1){A.fB("Forward is pressed")
-b9.b.b+=2}if(c4.b===1){A.fB("Backward is pressed")
-b9.b.b-=2}if(c4.c===1)b9.b.a+=2
-if(c4.d===1)b9.b.a-=2
+b9.b.b+=0.2}if(c4.b===1){A.fB("Backward is pressed")
+b9.b.b-=0.2}if(c4.c===1)b9.b.a+=0.2
+if(c4.d===1)b9.b.a-=0.2
 s=0.5*c3
 r=s*0
 q=A.i2()
