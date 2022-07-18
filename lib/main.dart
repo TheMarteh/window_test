@@ -83,13 +83,23 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text("${widget.title} - Polygons: ${object.tris.length}"),
       ),
-      body: Column(
+      body: Stack(
         children: [
+          // TODO: Add a 'window' around the renderer
           CustomPaint(
             size: Size(Globals.screenWidth, Globals.screenHeight),
             painter: TrisPainter(renderer.project(object, time / 1000, inputs)),
           ),
-          inputs.widget(),
+          Center(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              inputs.widget(),
+              Container(
+                height: 40,
+              )
+            ],
+          )),
         ],
       ),
       floatingActionButton: FloatingActionButton(
