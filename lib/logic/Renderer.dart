@@ -261,23 +261,23 @@ class Renderer {
     if (inputs.forwardButton == 1) {
       print("Forward is pressed");
       // move up
-      vCamera.y += 2.0;
+      vCamera.y += 0.2;
     }
 
     if (inputs.backwardButton == 1) {
       print("Backward is pressed");
       // move down
-      vCamera.y -= 2.0;
+      vCamera.y -= 0.2;
     }
 
     if (inputs.leftButton == 1) {
       // strafe left
-      vCamera.x += 2.0;
+      vCamera.x += 0.2;
     }
 
     if (inputs.rightButton == 1) {
       // strafe right
-      vCamera.x -= 2.0;
+      vCamera.x -= 0.2;
     }
 
     double theta = 0.5 * time;
