@@ -37,7 +37,7 @@ class _ControlPadState extends State<ControlPad> {
           GestureDetector(
             onTapCancel: () {
               widget.depressForward();
-            }
+            },
             onTapDown: (details) {
               widget.pressForward();
             },
@@ -64,7 +64,7 @@ class _ControlPadState extends State<ControlPad> {
                 GestureDetector(
                   onTapCancel: () {
                     widget.depressLeft();
-                  }
+                  },
                   onTapDown: (details) {
                     widget.pressLeft();
                   },
@@ -87,7 +87,7 @@ class _ControlPadState extends State<ControlPad> {
                 GestureDetector(
                   onTapCancel: () {
                     widget.depressBackward();
-                  }
+                  },
                   onTapDown: (details) {
                     widget.pressBackward();
                   },
@@ -110,7 +110,7 @@ class _ControlPadState extends State<ControlPad> {
                 GestureDetector(
                   onTapCancel: () {
                     widget.depressRight();
-                  }
+                  },
                   onTapDown: (details) {
                     widget.pressRight();
                   },
