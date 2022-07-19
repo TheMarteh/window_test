@@ -53,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     s.start();
-    _timer = Timer.periodic(const Duration(milliseconds: 1000 / Globals.targetTickRate), (Timer t) {
+    _timer = Timer.periodic(const Duration(milliseconds: 1000 ~/ Globals.targetTickRate), (Timer t) {
       if (!paused) {
         tick();
       }
