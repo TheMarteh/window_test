@@ -42,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Mesh object = Cube().MeshCube;
   late Timer _timer;
   bool paused = false;
-  const int msBetweenTicks = 1000 ~/ Globals.targetTickRate;
+  final int msBetweenTicks = 1000 ~/ Globals.targetTickRate;
   late ControlPadInputs inputs;
   late Renderer renderer;
   ObjConverter o = ObjConverter('assets/teddybear.obj');
