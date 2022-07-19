@@ -42,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Mesh object = Cube().MeshCube;
   late Timer _timer;
   bool paused = false;
-  static const int msBetweenTicks = 1000 ~/ Globals.targetTickRate;
+  final int msBetweenTicks = 1000 ~/ Globals.targetTickRate;
   late ControlPadInputs inputs;
   late Renderer renderer;
   ObjConverter o = ObjConverter('assets/teddybear.obj');
@@ -54,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     s.start();
-    _timer = Timer.periodic(const Duration(milliseconds: msBetweenTicks), (Timer t) {
+    _timer = Timer.periodic(Duration(milliseconds: msBetweenTicks), (Timer t) {
       if (!paused) {
         tick();
       }
