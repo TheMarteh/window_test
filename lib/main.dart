@@ -45,6 +45,12 @@ class _MyHomePageState extends State<MyHomePage> {
   final int msBetweenTicks = 1000 ~/ Globals.targetTickRate;
   late ControlPadInputs inputs;
   late Renderer renderer;
+  List<String> assetLocationStrings = [
+    'assets/teddybear.obj',
+    'assets/teapot.obj',
+    'assets/cow.obj',
+    'assets/axis.obj',
+  ];
   ObjConverter o = ObjConverter('assets/teddybear.obj');
 
   Stopwatch s = Stopwatch();
@@ -95,15 +101,34 @@ class _MyHomePageState extends State<MyHomePage> {
                 height: MediaQuery.of(context).size.height)),
           ),
           Center(
-              child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              inputs.widget(),
-              Container(
-                height: 60,
-              )
-            ],
-          )),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                inputs.widget(),
+                Container(
+                  height: 60,
+                )
+              ],
+            ),
+          ),
+          Positioned(
+            top: 15,
+            left: 15,
+            child: FloatingActionButton(
+              child: Icon(Icons.sync_outlined),
+              onPressed: () {
+                assetLocationStrings.shuffle();
+                String string = assetLocationStrings.first;
+                o = ObjConverter(string);
+                o.getMesh().then((Mesh obj) {
+                  object = obj;
+                  print("obj should be loaded");
+                });
+                print("hello!");
+              },
+              tooltip: "Hello",
+            ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(

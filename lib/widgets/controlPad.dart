@@ -61,6 +61,7 @@ class _ControlPadState extends State<ControlPad> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               ControlPadButton(
                 onPressed: widget.pressMoveUpward,
@@ -68,8 +69,11 @@ class _ControlPadState extends State<ControlPad> {
                 color: Colors.green,
                 icon: Icons.keyboard_double_arrow_up_outlined,
               ),
-              const SizedBox(
-                width: 60,
+              ControlPadButton(
+                onPressed: widget.pressStrafeLeft,
+                onRelease: widget.depressStrafeLeft,
+                color: Colors.orange,
+                icon: Icons.keyboard_double_arrow_left_outlined,
               ),
               ControlPadButton(
                 onPressed: widget.pressTurnUpward,
@@ -77,8 +81,11 @@ class _ControlPadState extends State<ControlPad> {
                 color: Colors.red,
                 icon: Icons.north_outlined,
               ),
-              const SizedBox(
-                width: 60,
+              ControlPadButton(
+                onPressed: widget.pressStrafeRight,
+                onRelease: widget.depressStrafeRight,
+                color: Colors.orange,
+                icon: Icons.keyboard_double_arrow_right_outlined,
               ),
               ControlPadButton(
                 onPressed: widget.pressMoveForward,

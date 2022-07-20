@@ -12,7 +12,7 @@ class Renderer {
   double zOffSet = 35;
 
   // camera placeholder
-  Vec3D vCamera = Vec3D(0.0, 0.0, 0.0);
+  Vec3D vCamera = Vec3D(0.0, 10.0, 0.0);
   Vec3D vLookDirection = Vec3D(0, 0, 1);
   double theta = 0.0;
   double yaw = 0;
@@ -312,7 +312,7 @@ class Renderer {
 
     Mat4x4 matRotZ = Matrix_MakeRotationZ(theta * 0);
     Mat4x4 matRotX = Matrix_MakeRotationX(theta * 0);
-    Mat4x4 matRotY = Matrix_MakeRotationY(theta * 0.5);
+    Mat4x4 matRotY = Matrix_MakeRotationY(theta * 0);
 
     Mat4x4 matTrans = Matrix_MakeTranslation(0.0, 10.0, zOffSet);
 
