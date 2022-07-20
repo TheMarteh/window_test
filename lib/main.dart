@@ -90,7 +90,9 @@ class _MyHomePageState extends State<MyHomePage> {
           // TODO: Add a 'window' around the renderer
           CustomPaint(
             size: Size(Globals.screenWidth, Globals.screenHeight),
-            painter: TrisPainter(renderer.project(object, time / 1000, inputs)),
+            painter: TrisPainter(renderer.project(object, time / 1000, inputs,
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height)),
           ),
           Center(
               child: Column(
@@ -98,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [
               inputs.widget(),
               Container(
-                height: 40,
+                height: 60,
               )
             ],
           )),
@@ -109,6 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Play/Pause',
         child: paused ? const Icon(Icons.play_arrow) : const Icon(Icons.pause),
       ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
   }
 

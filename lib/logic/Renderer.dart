@@ -5,18 +5,18 @@ import 'dart:math';
 import 'package:window_test/widgets/controlPad.dart';
 
 class Renderer {
+  // double height;
+  // double width;
+
+  // Renderer(this.width, this.height);
   double zOffSet = 35;
 
   // camera placeholder
   Vec3D vCamera = Vec3D(0.0, 0.0, 0.0);
   Vec3D vLookDirection = Vec3D(0, 0, 1);
   double theta = 0.0;
-
-  Mat4x4 matProj = Renderer.Matrix_MakeProjection(
-      90,
-      (Globals.screenHeight.toDouble()) / Globals.screenWidth.toDouble(),
-      0.1,
-      1000);
+  double yaw = 0;
+  double pitch = 0;
 
   Vec3D Matrix_MultiplyVector(Mat4x4 m, Vec3D i) {
     Vec3D v = Vec3D(0, 0, 0);
@@ -253,32 +253,58 @@ class Renderer {
     return gradientColor;
   }
 
-  List<Triangle> project(Mesh mesh, double time, ControlPadInputs inputs) {
+  List<Triangle> project(Mesh mesh, double time, ControlPadInputs inputs,
+      {required double width, required double height}) {
+    Mat4x4 matProj =
+        Renderer.Matrix_MakeProjection(90, (height) / width, 0.1, 1000);
     // print(keyPress);
 
     // List<ProjectedTriangle> trisToDraw = [];
     List<Triangle> trisToRaster = [];
 
-    if (inputs.forwardButton == 1) {
-      print("Forward is pressed");
+    if (inputs.moveUpwardButton == 1) {
       // move up
       vCamera.y += 10.0 * time;
     }
 
-    if (inputs.backwardButton == 1) {
-      print("Backward is pressed");
+    if (inputs.moveDownwardButton == 1) {
       // move down
       vCamera.y -= 10.0 * time;
     }
 
-    if (inputs.leftButton == 1) {
+    if (inputs.strafeLeftButton == 1) {
       // strafe left
       vCamera.x += 10.0 * time;
     }
 
-    if (inputs.rightButton == 1) {
+    if (inputs.strafeRightButton == 1) {
       // strafe right
       vCamera.x -= 10.0 * time;
+    }
+
+    Vec3D vForward = Vector_Mul(vLookDirection, 8.0 * time);
+
+    if (inputs.moveForwardButton == 1) {
+      vCamera = Vector_Add(vCamera, vForward);
+    }
+
+    if (inputs.moveBackwardButton == 1) {
+      vCamera = Vector_Sub(vCamera, vForward);
+    }
+    if (inputs.turnLeftButton == 1) {
+      yaw -= 0.5 * time;
+    }
+
+    if (inputs.turnRightButton == 1) {
+      yaw += 0.5 * time;
+    }
+
+    if (inputs.turnUpButton == 1) {
+      pitch -= 0.5 * time;
+    }
+
+    if (inputs.turnDownButton == 1) {
+      pitch += 0.5 * time;
     }
 
     theta += 0.5 * time;
@@ -296,7 +322,12 @@ class Renderer {
     matWorld = Matrix_MultiplyMatrix(matWorld, matTrans);
 
     Vec3D vUp = Vec3D(0, 1, 0);
-    Vec3D vTarget = Vector_Add(vCamera, vLookDirection);
+    Vec3D vTarget = Vec3D(0, 0, 1);
+    Mat4x4 matCameraRot = Matrix_MakeRotationY(yaw);
+    matCameraRot =
+        Matrix_MultiplyMatrix(matCameraRot, Matrix_MakeRotationX(pitch));
+    vLookDirection = Matrix_MultiplyVector(matCameraRot, vTarget);
+    vTarget = Vector_Add(vCamera, vLookDirection);
 
     Mat4x4 matCamera = Matrix_PointAt(vCamera, vTarget, vUp);
 
@@ -366,12 +397,12 @@ class Renderer {
         triProjected.arr[2] = Vector_Add(triProjected.arr[2], vOffsetView);
 
         // Scale into view
-        triProjected.arr[0].x *= 0.5 * Globals.screenWidth.toDouble();
-        triProjected.arr[0].y *= 0.5 * Globals.screenHeight.toDouble();
-        triProjected.arr[1].x *= 0.5 * Globals.screenWidth.toDouble();
-        triProjected.arr[1].y *= 0.5 * Globals.screenHeight.toDouble();
-        triProjected.arr[2].x *= 0.5 * Globals.screenWidth.toDouble();
-        triProjected.arr[2].y *= 0.5 * Globals.screenHeight.toDouble();
+        triProjected.arr[0].x *= 0.5 * width;
+        triProjected.arr[0].y *= 0.5 * height;
+        triProjected.arr[1].x *= 0.5 * width;
+        triProjected.arr[1].y *= 0.5 * height;
+        triProjected.arr[2].x *= 0.5 * width;
+        triProjected.arr[2].y *= 0.5 * height;
         triProjected.col = col;
 
         trisToRaster.add(triProjected);
@@ -448,7 +479,10 @@ class TrisPainter extends CustomPainter {
   // final List<ProjectedTriangle> trisToDraw;
   final List<Triangle> trisToRaster;
   bool wireframing;
-  TrisPainter(this.trisToRaster, {this.wireframing = true});
+  TrisPainter(
+    this.trisToRaster, {
+    this.wireframing = true,
+  });
   // : super(repaint: DrawingController());
   @override
   void paint(Canvas canvas, Size size) {
