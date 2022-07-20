@@ -28,7 +28,7 @@ class ControlPad extends StatefulWidget {
 class _ControlPadState extends State<ControlPad> {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 175,
       height: 115,
       child: Column(
