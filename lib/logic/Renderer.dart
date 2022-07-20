@@ -324,7 +324,7 @@ class Renderer {
 
       if (Vector_DotProduct(normal, vCameraRay) < 0.0) {
         // illumination
-        Vec3D light_direction = Vec3D(0.0, 1.0, -1.0);
+        Vec3D light_direction = Vec3D(0.0, 0.0, -1.0);
 
         double dp =
             min(max(0.1, Vector_DotProduct(light_direction, normal)), 1.0);
