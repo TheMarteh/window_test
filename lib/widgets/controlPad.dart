@@ -34,106 +34,78 @@ class _ControlPadState extends State<ControlPad> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          GestureDetector(
-            onTapCancel: () {
-              widget.depressForward();
-            },
-            onTapDown: (details) {
-              widget.pressForward();
-            },
-            onTapUp: (details) {
-              widget.depressForward();
-            },
-            child: Container(
-              // width: 20,
-              decoration: const BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
-                // borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Padding(
-                padding: EdgeInsets.all(15.0),
-                child: Icon(Icons.north_outlined),
-              ),
-            ),
+          ControlPadButton(
+            onPressed: widget.pressForward,
+            onRelease: widget.depressForward,
+            color: Colors.red,
+            icon: Icons.north_outlined,
           ),
           Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                GestureDetector(
-                  onTapCancel: () {
-                    widget.depressLeft();
-                  },
-                  onTapDown: (details) {
-                    widget.pressLeft();
-                  },
-                  onTapUp: (details) {
-                    widget.depressLeft();
-                  },
-                  child: Container(
-                    // width: 20,
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
-                      shape: BoxShape.circle,
-                      // borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(15.0),
-                      child: Icon(Icons.west_outlined),
-                    ),
-                  ),
+                ControlPadButton(
+                  onPressed: widget.pressLeft,
+                  onRelease: widget.depressLeft,
+                  color: Colors.red,
+                  icon: Icons.west_outlined,
                 ),
-                GestureDetector(
-                  onTapCancel: () {
-                    widget.depressBackward();
-                  },
-                  onTapDown: (details) {
-                    widget.pressBackward();
-                  },
-                  onTapUp: (details) {
-                    widget.depressBackward();
-                  },
-                  child: Container(
-                    // width: 20,
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
-                      shape: BoxShape.circle,
-                      // borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(15.0),
-                      child: Icon(Icons.south_outlined),
-                    ),
-                  ),
+                ControlPadButton(
+                  onPressed: widget.pressBackward,
+                  onRelease: widget.depressBackward,
+                  color: Colors.red,
+                  icon: Icons.south_outlined,
                 ),
-                GestureDetector(
-                  onTapCancel: () {
-                    widget.depressRight();
-                  },
-                  onTapDown: (details) {
-                    widget.pressRight();
-                  },
-                  onTapUp: (details) {
-                    widget.depressRight();
-                  },
-                  child: Container(
-                    // width: 20,
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
-                      shape: BoxShape.circle,
-                      // borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(15.0),
-                      child: Icon(Icons.east_outlined),
-                    ),
-                  ),
-                ),
+                ControlPadButton(
+                    onPressed: widget.pressRight,
+                    onRelease: widget.depressRight,
+                    color: Colors.red,
+                    icon: Icons.east_outlined),
               ],
             ),
           )
         ],
+      ),
+    );
+  }
+}
+
+class ControlPadButton extends GestureDetector {
+  final Function onPressed;
+  final Function onRelease;
+  final Color color;
+  final IconData icon;
+  ControlPadButton(
+      {required this.onPressed,
+      required this.onRelease,
+      required this.color,
+      required this.icon,
+      Key? key})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapCancel: () {
+        onRelease();
+      },
+      onTapDown: (details) {
+        onPressed();
+      },
+      onTapUp: (details) {
+        onRelease();
+      },
+      child: Container(
+        // width: 20,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+          // borderRadius: BorderRadius.circular(20),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Icon(icon),
+        ),
       ),
     );
   }
