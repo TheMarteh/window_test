@@ -41353,7 +41353,7 @@ J.Y(J.k(A.b(l.a,d1),0),0,1)
 J.Y(J.k(A.b(l.a,d1),1),1,1)
 J.Y(J.k(A.b(l.a,d1),2),2,1)
 J.Y(J.k(A.b(l.a,d1),3),3,1)
-J.Y(J.k(A.b(l.a,d1),3),0,0)
+J.Y(J.k(A.b(l.a,d1),3),0,400)
 J.Y(J.k(A.b(l.a,d1),3),1,2)
 J.Y(J.k(A.b(l.a,d1),3),2,400)
 k=A.i2()
@@ -41595,7 +41595,7 @@ J(a,b){return new A.p2(B.Aw,"3D engine Demo",A.a0D(null,B.Ah),null)}}
 A.pf.prototype={
 ak(){var s=A.a([],t.kQ),r=A.a([A.eA(new A.E(0,0,0),new A.E(0,1,0),new A.E(1,1,0)),A.eA(new A.E(0,0,0),new A.E(1,1,0),new A.E(1,0,0)),A.eA(new A.E(1,0,0),new A.E(1,1,0),new A.E(1,1,1)),A.eA(new A.E(1,0,0),new A.E(1,1,1),new A.E(1,0,1)),A.eA(new A.E(1,0,1),new A.E(1,1,1),new A.E(0,1,1)),A.eA(new A.E(1,0,1),new A.E(0,1,1),new A.E(0,0,1)),A.eA(new A.E(0,0,1),new A.E(0,1,1),new A.E(0,1,0)),A.eA(new A.E(0,0,1),new A.E(0,1,0),new A.E(0,0,0)),A.eA(new A.E(0,1,0),new A.E(0,1,1),new A.E(1,1,1)),A.eA(new A.E(0,1,0),new A.E(1,1,1),new A.E(1,1,0)),A.eA(new A.E(1,0,1),new A.E(0,0,1),new A.E(0,0,0)),A.eA(new A.E(1,0,1),new A.E(0,0,0),new A.E(1,0,0))],t.g),q=A.a(["assets/teddybear.obj","assets/teapot.obj","assets/cow.obj","assets/axis.obj"],t.s)
 $.nj()
-return new A.rM(s,new A.jw(r),33,q,new A.xe("assets/testfile.obj"),new A.ma(),B.n)}}
+return new A.rM(s,new A.jw(r),33,q,new A.xe("assets/testfile2.obj"),new A.ma(),B.n)}}
 A.rM.prototype={
 aY(){var s,r=this
 r.at.kK(0)
