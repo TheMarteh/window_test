@@ -95,7 +95,8 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           // TODO: Add a 'window' around the renderer
           CustomPaint(
-            size: Size(Globals.screenWidth, Globals.screenHeight),
+            size: Size(MediaQuery.of(context).size.width,
+                MediaQuery.of(context).size.height),
             painter: TrisPainter(renderer.project(object, time / 1000, inputs,
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height)),

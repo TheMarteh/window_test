@@ -9,7 +9,7 @@ class Renderer {
   // double width;
 
   // Renderer(this.width, this.height);
-  double zOffSet = 500;
+  double zOffSet = 400;
 
   // camera placeholder
   Vec3D vCamera = Vec3D(0.0, 1.0, 0.0);
@@ -344,7 +344,7 @@ class Renderer {
     int scalenum = (125 * lum).round();
 
     // with material gradients
-    int gradientnum = (lum.abs() * 8).round();
+    int gradientnum = (lum.abs() * 9).round();
     List<Color> colors = [
       Colors.green.shade900,
       Colors.green.shade800,
@@ -372,27 +372,27 @@ class Renderer {
 
     // List<ProjectedTriangle> trisToDraw = [];
     List<Triangle> trisToRaster = [];
-    Vec3D vForward = Vector_Mul(vLookDirection, 30.0 * time);
+    Vec3D vForward = Vector_Mul(vLookDirection, Globals.speed * time);
 
     if (inputs.moveUpwardButton == 1) {
       // move up
-      vCamera.y += 30.0 * time;
+      vCamera.y += Globals.speed * time;
     }
 
     if (inputs.moveDownwardButton == 1) {
       // move down
-      vCamera.y -= 30.0 * time;
+      vCamera.y -= Globals.speed * time;
     }
 
     if (inputs.strafeLeftButton == 1) {
       // strafe left
-      vCamera = Vector_Add(vCamera, Vec3D(vForward.z, vForward.y, -vForward.x));
+      vCamera = Vector_Add(vCamera, Vec3D(vForward.z, 0, -vForward.x));
       // vCamera.x += 30.0 * time;
     }
 
     if (inputs.strafeRightButton == 1) {
       // strafe right
-      vCamera = Vector_Sub(vCamera, Vec3D(vForward.z, vForward.y, -vForward.x));
+      vCamera = Vector_Sub(vCamera, Vec3D(vForward.z, 0, -vForward.x));
       // vCamera.x -= 30.0 * time;
     }
 
@@ -404,19 +404,19 @@ class Renderer {
       vCamera = Vector_Sub(vCamera, vForward);
     }
     if (inputs.turnLeftButton == 1) {
-      yaw -= 0.5 * time;
+      yaw -= 0.8 * time;
     }
 
     if (inputs.turnRightButton == 1) {
-      yaw += 0.5 * time;
+      yaw += 0.8 * time;
     }
 
     if (inputs.turnUpButton == 1) {
-      pitch -= 0.5 * time;
+      pitch -= 0.8 * time;
     }
 
     if (inputs.turnDownButton == 1) {
-      pitch += 0.5 * time;
+      pitch += 0.8 * time;
     }
 
     theta += 0.5 * time;
@@ -424,9 +424,9 @@ class Renderer {
 
     Mat4x4 matRotZ = Matrix_MakeRotationZ(theta * 0);
     Mat4x4 matRotX = Matrix_MakeRotationX(theta * 0);
-    Mat4x4 matRotY = Matrix_MakeRotationY(theta * 0);
+    Mat4x4 matRotY = Matrix_MakeRotationY(theta * 0.0);
 
-    Mat4x4 matTrans = Matrix_MakeTranslation(400.0, 2.0, zOffSet);
+    Mat4x4 matTrans = Matrix_MakeTranslation(0.0, 2.0, zOffSet);
 
     Mat4x4 matWorld = Matrix_MakeIdentity();
     matWorld = Matrix_MultiplyMatrix(matRotZ, matRotX);
@@ -469,7 +469,7 @@ class Renderer {
 
       if (Vector_DotProduct(normal, vCameraRay) < 0.0) {
         // illumination
-        Vec3D light_direction = Vec3D(200.0, 1000.0, -20.0);
+        Vec3D light_direction = Vec3D(0.4, 1, -0.2);
 
         double dp =
             min(max(0.1, Vector_DotProduct(light_direction, normal)), 1.0);
