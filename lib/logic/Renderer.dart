@@ -6,7 +6,7 @@ import 'dart:math';
 import 'package:window_test/widgets/controlPad.dart';
 
 class Renderer {
-  double zOffSet = 400;
+  double zOffSet = 10;
 
   // Camera start and looking direction vectors
   Vec3D vCamera = Vec3D(0.0, 1.0, 0.0);
@@ -441,7 +441,7 @@ class Renderer {
     Mat4x4 matRotY = Matrix_MakeRotationY(theta * 0.0);
 
     // Translating the object to fit in the initial view of the camera.
-    Mat4x4 matTrans = Matrix_MakeTranslation(400.0, 2.0, zOffSet);
+    Mat4x4 matTrans = Matrix_MakeTranslation(0.0, -5.0, zOffSet);
 
     // Set up the total world translation matrix
     Mat4x4 matWorld = Matrix_MakeIdentity();
