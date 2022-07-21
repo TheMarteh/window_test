@@ -12,7 +12,7 @@ class Renderer {
   double zOffSet = 35;
 
   // camera placeholder
-  Vec3D vCamera = Vec3D(0.0, 10.0, 0.0);
+  Vec3D vCamera = Vec3D(0.0, 1.0, 0.0);
   Vec3D vLookDirection = Vec3D(0, 0, 1);
   double theta = 0.0;
   double yaw = 0;
@@ -227,6 +227,107 @@ class Renderer {
     return v;
   }
 
+  Vec3D Vector_IntersectPlane(
+      Vec3D plane_p, Vec3D plane_n, Vec3D lineStart, Vec3D lineEnd) {
+    plane_n = Vector_Normalize(plane_n);
+    double plane_d = -(Vector_DotProduct(plane_n, plane_p));
+    double ad = Vector_DotProduct(lineStart, plane_n);
+    double bd = Vector_DotProduct(lineEnd, plane_n);
+    double t = (-1 * plane_d - ad) / (bd - ad);
+    Vec3D lineStartToEnd = Vector_Sub(lineEnd, lineStart);
+    Vec3D lineToIntersect = Vector_Mul(lineStartToEnd, t);
+    return Vector_Add(lineStart, lineToIntersect);
+  }
+
+  List<Triangle> Triangle_ClipAgainstPlane(Vec3D plane_p, Vec3D plane_n,
+      Triangle in_tri, Triangle out_tri1, Triangle out_tri2) {
+    // Make sure plane is normal
+    plane_n = Vector_Normalize(plane_n);
+
+    Function dist = (Vec3D p) {
+      Vec3D n = Vector_Normalize(p);
+      return (plane_n.x * p.x +
+          plane_n.y * p.y +
+          plane_n.z * p.z -
+          Vector_DotProduct(plane_n, plane_p));
+    };
+
+    // Temporary storage arrays for inside and outside points.
+    List<Vec3D> inside_points = List<Vec3D>.filled(3, Vec3D(0, 0, 0));
+    int nInsidePointCount = 0;
+    List<Vec3D> outside_points = List<Vec3D>.filled(3, Vec3D(0, 0, 0));
+    int nOutsidePointCount = 0;
+
+    double d0 = dist(in_tri.arr[0]);
+    double d1 = dist(in_tri.arr[1]);
+    double d2 = dist(in_tri.arr[2]);
+
+    if (d0 >= 0) {
+      inside_points[nInsidePointCount++] = in_tri.arr[0];
+    } else {
+      outside_points[nOutsidePointCount++] = in_tri.arr[0];
+    }
+    if (d1 >= 0) {
+      inside_points[nInsidePointCount++] = in_tri.arr[1];
+    } else {
+      outside_points[nOutsidePointCount++] = in_tri.arr[1];
+    }
+    if (d2 >= 0) {
+      inside_points[nInsidePointCount++] = in_tri.arr[2];
+    } else {
+      outside_points[nOutsidePointCount++] = in_tri.arr[2];
+    }
+
+    if (nInsidePointCount == 0) {
+      return [];
+    }
+
+    if (nInsidePointCount == 3) {
+      out_tri1 = in_tri;
+      return [out_tri1];
+    }
+
+    if (nInsidePointCount == 1 && nOutsidePointCount == 2) {
+      out_tri1.col = in_tri.col;
+
+      out_tri1.arr[2] = inside_points[0];
+      out_tri1.arr[1] = Vector_IntersectPlane(
+          plane_p, plane_n, inside_points[0], outside_points[0]);
+      out_tri1.arr[0] = Vector_IntersectPlane(
+          plane_p, plane_n, inside_points[0], outside_points[1]);
+
+      return [out_tri1];
+    }
+
+    if (nInsidePointCount == 2 && nOutsidePointCount == 1) {
+      // out_tri1.col = in_tri.col;
+      // out_tri2.col = in_tri.col;
+
+      out_tri1.col = Colors.red;
+      out_tri2.col = Colors.purple;
+
+      out_tri1.arr[0] = inside_points[0];
+      out_tri1.arr[1] = inside_points[1];
+      out_tri1.arr[2] = Vector_IntersectPlane(
+          plane_p, plane_n, inside_points[0], outside_points[0]);
+
+      out_tri2.arr[0] = inside_points[1];
+      out_tri2.arr[1] = out_tri1.arr[2];
+      out_tri2.arr[2] = Vector_IntersectPlane(
+          plane_p, plane_n, inside_points[1], outside_points[0]);
+
+      // print(out_tri1.arr[0].toString() +
+      //     out_tri1.arr[1].toString() +
+      //     out_tri1.arr[2].toString());
+      List<Triangle> l = List.empty(growable: true);
+      l.add(out_tri1);
+      l.add(out_tri2);
+      // return l;
+      return [out_tri2, out_tri1];
+    }
+    return [];
+  }
+
   Color calculateColor(double lum) {
     Color baseColor = Color.fromARGB(255, 209, 255, 84);
     int range = 125;
@@ -314,7 +415,7 @@ class Renderer {
     Mat4x4 matRotX = Matrix_MakeRotationX(theta * 0);
     Mat4x4 matRotY = Matrix_MakeRotationY(theta * 0);
 
-    Mat4x4 matTrans = Matrix_MakeTranslation(0.0, 10.0, zOffSet);
+    Mat4x4 matTrans = Matrix_MakeTranslation(0.0, 2.0, zOffSet);
 
     Mat4x4 matWorld = Matrix_MakeIdentity();
     matWorld = Matrix_MultiplyMatrix(matRotZ, matRotX);
@@ -371,43 +472,58 @@ class Renderer {
         triViewed.arr[2] =
             Matrix_MultiplyVector(matView, triTransformed.arr[2]);
 
-        // Project the 3d-Triangles to a 2d space
-        triProjected.arr[0] = Matrix_MultiplyVector(matProj, triViewed.arr[0]);
-        triProjected.arr[1] = Matrix_MultiplyVector(matProj, triViewed.arr[1]);
-        triProjected.arr[2] = Matrix_MultiplyVector(matProj, triViewed.arr[2]);
-        triProjected.col = triTransformed.col;
+        // Clip viewed Triangle against near plane, this could form two more triangles
+        // int nClippedTriangles = 0;
+        //  = List<Triangle>.filled(2, Triangle.empty());
+        List<Triangle> clipped = Triangle_ClipAgainstPlane(Vec3D(0, 0, 2.1),
+            Vec3D(0, 0, 1), triViewed, Triangle.empty(), Triangle.empty());
 
-        triProjected.arr[0] =
-            Vector_Div(triProjected.arr[0], triProjected.arr[0].w);
-        triProjected.arr[1] =
-            Vector_Div(triProjected.arr[1], triProjected.arr[1].w);
-        triProjected.arr[2] =
-            Vector_Div(triProjected.arr[2], triProjected.arr[2].w);
+        for (int n = 0; n < clipped.length; n++) {
+          // Project the 3d-Triangles to a 2d space
+          triProjected.arr[0] =
+              Matrix_MultiplyVector(matProj, clipped[n].arr[0]);
+          triProjected.arr[1] =
+              Matrix_MultiplyVector(matProj, clipped[n].arr[1]);
+          triProjected.arr[2] =
+              Matrix_MultiplyVector(matProj, clipped[n].arr[2]);
+          triProjected.col = triTransformed.col;
 
-        triProjected.arr[0].x *= -1.0;
-        triProjected.arr[1].x *= -1.0;
-        triProjected.arr[2].x *= -1.0;
-        triProjected.arr[0].y *= -1.0;
-        triProjected.arr[1].y *= -1.0;
-        triProjected.arr[2].y *= -1.0;
+          triProjected.arr[0] =
+              Vector_Div(triProjected.arr[0], triProjected.arr[0].w);
+          triProjected.arr[1] =
+              Vector_Div(triProjected.arr[1], triProjected.arr[1].w);
+          triProjected.arr[2] =
+              Vector_Div(triProjected.arr[2], triProjected.arr[2].w);
 
-        Vec3D vOffsetView = Vec3D(1, 1, 0);
-        triProjected.arr[0] = Vector_Add(triProjected.arr[0], vOffsetView);
-        triProjected.arr[1] = Vector_Add(triProjected.arr[1], vOffsetView);
-        triProjected.arr[2] = Vector_Add(triProjected.arr[2], vOffsetView);
+          triProjected.arr[0].x *= -1.0;
+          triProjected.arr[1].x *= -1.0;
+          triProjected.arr[2].x *= -1.0;
+          triProjected.arr[0].y *= -1.0;
+          triProjected.arr[1].y *= -1.0;
+          triProjected.arr[2].y *= -1.0;
 
-        // Scale into view
-        triProjected.arr[0].x *= 0.5 * width;
-        triProjected.arr[0].y *= 0.5 * height;
-        triProjected.arr[1].x *= 0.5 * width;
-        triProjected.arr[1].y *= 0.5 * height;
-        triProjected.arr[2].x *= 0.5 * width;
-        triProjected.arr[2].y *= 0.5 * height;
-        triProjected.col = col;
+          Vec3D vOffsetView = Vec3D(1, 1, 0);
+          triProjected.arr[0] = Vector_Add(triProjected.arr[0], vOffsetView);
+          triProjected.arr[1] = Vector_Add(triProjected.arr[1], vOffsetView);
+          triProjected.arr[2] = Vector_Add(triProjected.arr[2], vOffsetView);
 
-        trisToRaster.add(triProjected);
+          // Scale into view
+          triProjected.arr[0].x *= 0.5 * width;
+          triProjected.arr[0].y *= 0.5 * height;
+          triProjected.arr[1].x *= 0.5 * width;
+          triProjected.arr[1].y *= 0.5 * height;
+          triProjected.arr[2].x *= 0.5 * width;
+          triProjected.arr[2].y *= 0.5 * height;
+          triProjected.col = col;
+
+          Triangle triToSave =
+              Triangle.from(triProjected, col: triProjected.col);
+
+          trisToRaster.add(triToSave);
+        }
       }
     }
+    print(trisToRaster.length.toString());
     return trisToRaster;
   }
 }
@@ -418,6 +534,12 @@ class Vec3D {
   double z;
   double w = 1;
   Vec3D(this.x, this.y, this.z);
+
+  @override
+  String toString() {
+    String s = "($x, $y, $z)";
+    return s;
+  }
 }
 
 class Triangle {
