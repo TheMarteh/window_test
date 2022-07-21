@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:window_test/globals.dart';
 import 'dart:math';
@@ -5,19 +6,20 @@ import 'dart:math';
 import 'package:window_test/widgets/controlPad.dart';
 
 class Renderer {
-  // double height;
-  // double width;
-
-  // Renderer(this.width, this.height);
   double zOffSet = 400;
 
-  // camera placeholder
+  // Camera start and looking direction vectors
   Vec3D vCamera = Vec3D(0.0, 1.0, 0.0);
   Vec3D vLookDirection = Vec3D(0, 0, 1);
-  double theta = 0.0;
+
+  // Initializing yaw and pitch angles for the camera. Starting at 0
   double yaw = 0;
   double pitch = 0;
 
+  // Rotation multiplier, used for rotating objects around their origin axis
+  double theta = 0.0;
+
+  // Multiply a Matrix with a Vector
   Vec3D Matrix_MultiplyVector(Mat4x4 m, Vec3D i) {
     Vec3D v = Vec3D(0, 0, 0);
 
@@ -38,20 +40,9 @@ class Renderer {
         (i.z * m.m[2][3]) +
         (i.w * m.m[3][3]);
     return v;
-
-    // print("After multiplication: " + i.x.toString());
-    // print("After testing: " + i.x.toString());
-
-    // double w =
-    //     (i.x * m.m[0][3]) + (i.y * m.m[1][3]) + (i.z * m.m[2][3]) + m.m[3][3];
-    // if (w != 0.0) {
-    //   o.x /= w;
-    //   o.y /= w;
-    //   o.z /= w;
-    // }
-    // return Vec3D(o.x, o.y, o.z);
   }
 
+  // Constructor for an identity matrix
   Mat4x4 Matrix_MakeIdentity() {
     Mat4x4 matrix = Mat4x4();
     matrix.m[0][0] = 1.0;
@@ -61,6 +52,7 @@ class Renderer {
     return matrix;
   }
 
+  // Constructor for a Rotation matrix over the X-Axis
   Mat4x4 Matrix_MakeRotationX(double angleRad) {
     Mat4x4 matrix = Mat4x4();
     matrix.m[0][0] = 1.0;
@@ -72,6 +64,7 @@ class Renderer {
     return matrix;
   }
 
+  // Constructor for a Rotation matrix over the Y-Axis
   Mat4x4 Matrix_MakeRotationY(double angleRad) {
     Mat4x4 matrix = Mat4x4();
     matrix.m[0][0] = cos(angleRad);
@@ -83,6 +76,7 @@ class Renderer {
     return matrix;
   }
 
+  // Constructor for a Rotation matrix over the Z-Axis
   Mat4x4 Matrix_MakeRotationZ(double angleRad) {
     Mat4x4 matrix = Mat4x4();
     matrix.m[0][0] = cos(angleRad);
@@ -94,6 +88,7 @@ class Renderer {
     return matrix;
   }
 
+  // Constructor for a Translation matrix to offset to x, y and z coordinates
   Mat4x4 Matrix_MakeTranslation(double x, double y, double z) {
     Mat4x4 matrix = Mat4x4();
     matrix.m[0][0] = 1.0;
@@ -106,6 +101,7 @@ class Renderer {
     return matrix;
   }
 
+  // The projection matrix, used to convert from 3D to 2D space
   static Mat4x4 Matrix_MakeProjection(
       double fovDegrees, double aspectRatio, double near, double far) {
     double fovRad = 1.0 / tan(fovDegrees * 0.5 / 180.0 * 3.14159265);
@@ -119,6 +115,7 @@ class Renderer {
     return matrix;
   }
 
+  // Multiply a matrix with another matrix
   Mat4x4 Matrix_MultiplyMatrix(Mat4x4 m1, Mat4x4 m2) {
     Mat4x4 matrix = Mat4x4();
     for (int c = 0; c < 4; c++) {
@@ -132,6 +129,7 @@ class Renderer {
     return matrix;
   }
 
+  // Add a matrix to another matrix
   Mat4x4 Matrix_AddMatrix(Mat4x4 m1, Mat4x4 m2) {
     Mat4x4 matrix = Mat4x4();
     for (int c = 0; c < 4; c++) {
@@ -143,15 +141,19 @@ class Renderer {
   }
 
   Mat4x4 Matrix_PointAt(Vec3D pos, Vec3D target, Vec3D up) {
+    // Calculate the new forward direction using our current position and a vector that points to our target
     Vec3D newForward = Vector_Sub(target, pos);
     newForward = Vector_Normalize(newForward);
 
+    // Calculate the new up direction, as we can also pitch
     Vec3D a = Vector_Mul(newForward, Vector_DotProduct(up, newForward));
     Vec3D newUp = Vector_Sub(up, a);
     newUp = Vector_Normalize(newUp);
 
+    // New right is the cross product of the two other matrices
     Vec3D newRight = Vector_CrossProduct(newUp, newForward);
 
+    // The final Dimensioning and Translation matrix
     Mat4x4 matrix = Mat4x4();
     matrix.m[0][0] = newRight.x;
     matrix.m[0][1] = newRight.y;
@@ -254,20 +256,22 @@ class Renderer {
     // Make sure plane is normal
     plane_n = Vector_Normalize(plane_n);
 
-    Function dist = (Vec3D p) {
+    // Returns the shortest distance from a point to a plane.
+    dist(Vec3D p) {
       Vec3D n = Vector_Normalize(p);
       return (plane_n.x * p.x +
           plane_n.y * p.y +
           plane_n.z * p.z -
           Vector_DotProduct(plane_n, plane_p));
-    };
+    }
 
-    // Temporary storage arrays for inside and outside points.
+    // Temporary storage for inside and outside points.
     List<Vec3D> inside_points = List<Vec3D>.filled(3, Vec3D(0, 0, 0));
     int nInsidePointCount = 0;
     List<Vec3D> outside_points = List<Vec3D>.filled(3, Vec3D(0, 0, 0));
     int nOutsidePointCount = 0;
 
+    // get the distance of each point to the near plane
     double d0 = dist(in_tri.arr[0]);
     double d1 = dist(in_tri.arr[1]);
     double d2 = dist(in_tri.arr[2]);
@@ -288,6 +292,12 @@ class Renderer {
       outside_points[nOutsidePointCount++] = in_tri.arr[2];
     }
 
+    // Break the input triangles up into smaller triangles.
+    // Four possible outcomes; the Triangle has all points outside of the view plane:
+    // No triangles will be rendered at all,
+    // The triangle has all points in the view plane: Nothing will be clipped
+    // The triangle has one point in the view plane: The triangle needs to be cut off
+    // The triangle has two points in the view plane: Make a quad and triangulate.
     if (nInsidePointCount == 0) {
       return [];
     }
@@ -298,8 +308,11 @@ class Renderer {
     }
 
     if (nInsidePointCount == 1 && nOutsidePointCount == 2) {
+      // copy original colour
       out_tri1.col = in_tri.col;
 
+      // Tri uses the inside point and the two intersect points as new
+      // points
       out_tri1.arr[2] = inside_points[0];
       out_tri1.arr[1] = Vector_IntersectPlane(
           plane_p, plane_n, inside_points[0], outside_points[0]);
@@ -310,40 +323,38 @@ class Renderer {
     }
 
     if (nInsidePointCount == 2 && nOutsidePointCount == 1) {
+      // Copy original colour
       out_tri1.col = in_tri.col;
       out_tri2.col = in_tri.col;
 
-      // out_tri1.col = Colors.red;
-      // out_tri2.col = Colors.purple;
-
+      // The first Triangle uses the two inside points and the intersect of the plane with a line to an outside point.
       out_tri1.arr[0] = inside_points[0];
       out_tri1.arr[1] = inside_points[1];
       out_tri1.arr[2] = Vector_IntersectPlane(
           plane_p, plane_n, inside_points[0], outside_points[0]);
 
+      // The second triangle uses the second inside point, the clipped point from above
+      // and the intersect of the other line.
       out_tri2.arr[0] = inside_points[1];
       out_tri2.arr[1] = out_tri1.arr[2];
       out_tri2.arr[2] = Vector_IntersectPlane(
           plane_p, plane_n, inside_points[1], outside_points[0]);
 
-      // print(out_tri1.arr[0].toString() +
-      //     out_tri1.arr[1].toString() +
-      //     out_tri1.arr[2].toString());
-      List<Triangle> l = List.empty(growable: true);
-      l.add(out_tri1);
-      l.add(out_tri2);
-      // return l;
       return [out_tri2, out_tri1];
     }
     return [];
   }
 
   Color calculateColor(double lum) {
-    Color baseColor = Color.fromARGB(255, 209, 255, 84);
-    int range = 125;
-    int scalenum = (125 * lum).round();
+    // // Tried my hand at using a smoother scale.
+    //
+    // Color baseColor = Color.fromARGB(255, 209, 255, 84);
+    // int range = 125;
+    // int scalenum = (125 * lum).round();
+    // Color newColor = Color.fromARGB(baseColor.alpha, baseColor.red - scalenum,
+    //     baseColor.green - scalenum, baseColor.blue - scalenum);
 
-    // with material gradients
+    // With material gradients, this means we only have a small amount of colours.
     int gradientnum = (lum.abs() * 9).round();
     List<Color> colors = [
       Colors.green.shade900,
@@ -358,20 +369,21 @@ class Renderer {
       Colors.green.shade50,
     ];
     Color gradientColor = colors[gradientnum];
-    Color newColor = Color.fromARGB(baseColor.alpha, baseColor.red - scalenum,
-        baseColor.green - scalenum, baseColor.blue - scalenum);
 
     return gradientColor;
   }
 
   List<Triangle> project(Mesh mesh, double time, ControlPadInputs inputs,
       {required double width, required double height}) {
+    // Initialize the Projection Matrix. This does not change, so I want to move this out of this function.
     Mat4x4 matProj =
         Renderer.Matrix_MakeProjection(90, (height) / width, 0.1, 1000);
-    // print(keyPress);
 
-    // List<ProjectedTriangle> trisToDraw = [];
+    // Save all tris to a list, to sort and clip them later
     List<Triangle> trisToRaster = [];
+
+    // Calculate new forward vector based on the time since last frame render.
+    // Basically normalising the speed to disconnect from FPS
     Vec3D vForward = Vector_Mul(vLookDirection, Globals.speed * time);
 
     if (inputs.moveUpwardButton == 1) {
@@ -386,14 +398,14 @@ class Renderer {
 
     if (inputs.strafeLeftButton == 1) {
       // strafe left
+      // As we only need to move across the X-Z plane we set Y to zero.
       vCamera = Vector_Add(vCamera, Vec3D(vForward.z, 0, -vForward.x));
-      // vCamera.x += 30.0 * time;
     }
 
     if (inputs.strafeRightButton == 1) {
       // strafe right
+      // As we only need to move across the X-Z plane we set Y to zero.
       vCamera = Vector_Sub(vCamera, Vec3D(vForward.z, 0, -vForward.x));
-      // vCamera.x -= 30.0 * time;
     }
 
     if (inputs.moveForwardButton == 1) {
@@ -419,27 +431,33 @@ class Renderer {
       pitch += 0.8 * time;
     }
 
+    // Theta will also be normalized by the time
     theta += 0.5 * time;
-    // double theta = 0.0;
 
-    Mat4x4 matRotZ = Matrix_MakeRotationZ(theta * 0);
-    Mat4x4 matRotX = Matrix_MakeRotationX(theta * 0);
+    // Setting up the rotation matrices for rotating an object around their origin.
+    // Normalized with the Theta and given weights in the form of a double.
+    Mat4x4 matRotZ = Matrix_MakeRotationZ(theta * 0.0);
+    Mat4x4 matRotX = Matrix_MakeRotationX(theta * 0.0);
     Mat4x4 matRotY = Matrix_MakeRotationY(theta * 0.0);
 
+    // Translating the object to fit in the initial view of the camera.
     Mat4x4 matTrans = Matrix_MakeTranslation(0.0, 2.0, zOffSet);
 
+    // Set up the total world translation matrix
     Mat4x4 matWorld = Matrix_MakeIdentity();
     matWorld = Matrix_MultiplyMatrix(matRotZ, matRotX);
     matWorld = Matrix_MultiplyMatrix(matWorld, matRotY);
     matWorld = Matrix_MultiplyMatrix(matWorld, matTrans);
 
+    // up is always up
     Vec3D vUp = Vec3D(0, 1, 0);
     Vec3D vTarget = Vec3D(0, 0, 1);
+
+    // First we rotate in X axis, then we rotate in Y axis.
     Mat4x4 matCameraRot = Matrix_MultiplyMatrix(
         Matrix_MakeRotationX(pitch), Matrix_MakeRotationY(yaw));
-    // matCameraRot =
-    //     Matrix_MultiplyMatrix(matCameraRot, Matrix_MakeRotationX(pitch));
-    print(yaw.toString());
+
+    // Calculate new look
     vLookDirection = Matrix_MultiplyVector(matCameraRot, vTarget);
     vTarget = Vector_Add(vCamera, vLookDirection);
 
@@ -610,7 +628,9 @@ class Renderer {
         finalTris.add(tri);
       }
     }
-    print(finalTris.length.toString());
+    if (kDebugMode) {
+      print("Rendering ${finalTris.length.toString()} tri's");
+    }
 
     return finalTris;
   }

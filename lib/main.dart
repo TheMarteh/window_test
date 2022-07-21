@@ -94,6 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Stack(
         children: [
           // TODO: Add a 'window' around the renderer
+          // TODO: Look at the Class Diagram for the renderer and Custom Painter
           CustomPaint(
             size: Size(MediaQuery.of(context).size.width,
                 MediaQuery.of(context).size.height),
@@ -112,6 +113,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
           ),
+
+          // Temporary button to change the object to a random object
           Positioned(
             top: 15,
             left: 15,
