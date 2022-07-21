@@ -441,7 +441,7 @@ class Renderer {
     Mat4x4 matRotY = Matrix_MakeRotationY(theta * 0.0);
 
     // Translating the object to fit in the initial view of the camera.
-    Mat4x4 matTrans = Matrix_MakeTranslation(0.0, 2.0, zOffSet);
+    Mat4x4 matTrans = Matrix_MakeTranslation(400.0, 2.0, zOffSet);
 
     // Set up the total world translation matrix
     Mat4x4 matWorld = Matrix_MakeIdentity();
@@ -556,6 +556,22 @@ class Renderer {
     }
 
     trisToRaster.sort((t1, t2) {
+      // List<double> sortedPoints1 = [t1.arr[0].z, t1.arr[1].z, t1.arr[2].z];
+      // sortedPoints1.sort((t1, t2) {
+      //   return t1.compareTo(t2);
+      // });
+      // List<double> sortedPoints2 = [t2.arr[0].z, t2.arr[1].z, t2.arr[2].z];
+      // sortedPoints2.sort((t1, t2) {
+      //   return t1.compareTo(t2);
+      // });
+
+      // double z1 =
+      //     ((sortedPoints1[0] * 3 + sortedPoints1[1] * 2 + sortedPoints1[2]) /
+      //         6.0);
+      // double z2 =
+      //     ((sortedPoints2[0] * 3 + sortedPoints2[1] * 2 + sortedPoints2[2]) /
+      //         6.0);
+
       double z1 = (t1.arr[0].z + t1.arr[1].z + t1.arr[2].z) / 3.0;
       double z2 = (t2.arr[0].z + t2.arr[1].z + t2.arr[2].z) / 3.0;
       return z2.compareTo(z1);

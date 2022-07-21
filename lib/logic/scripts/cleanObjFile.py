@@ -1,6 +1,6 @@
 import os
 dirname = os.path.dirname(__file__)
-filename = os.path.join(dirname, "../../../assets/testfile.obj")
+filename = os.path.join(dirname, "../../../assets/testfile2.obj")
 
 file1 = open('C:\\Users\\Steal\\Downloads\\untitled2.obj',
            'r')
