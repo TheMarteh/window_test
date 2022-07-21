@@ -475,7 +475,7 @@ class Renderer {
         // Clip viewed Triangle against near plane, this could form two more triangles
         // int nClippedTriangles = 0;
         //  = List<Triangle>.filled(2, Triangle.empty());
-        List<Triangle> clipped = Triangle_ClipAgainstPlane(Vec3D(0, 0, 2.1),
+        List<Triangle> clipped = Triangle_ClipAgainstPlane(Vec3D(0, 0, 0.1),
             Vec3D(0, 0, 1), triViewed, Triangle.empty(), Triangle.empty());
 
         for (int n = 0; n < clipped.length; n++) {
