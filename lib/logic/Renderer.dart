@@ -9,7 +9,7 @@ class Renderer {
   // double width;
 
   // Renderer(this.width, this.height);
-  double zOffSet = 35;
+  double zOffSet = 500;
 
   // camera placeholder
   Vec3D vCamera = Vec3D(0.0, 1.0, 0.0);
@@ -127,6 +127,16 @@ class Renderer {
             m1.m[r][1] * m2.m[1][c] +
             m1.m[r][2] * m2.m[2][c] +
             m1.m[r][3] * m2.m[3][c];
+      }
+    }
+    return matrix;
+  }
+
+  Mat4x4 Matrix_AddMatrix(Mat4x4 m1, Mat4x4 m2) {
+    Mat4x4 matrix = Mat4x4();
+    for (int c = 0; c < 4; c++) {
+      for (int r = 0; r < 4; r++) {
+        matrix.m[r][c] = m1.m[r][c] * m2.m[r][c];
       }
     }
     return matrix;
@@ -300,11 +310,11 @@ class Renderer {
     }
 
     if (nInsidePointCount == 2 && nOutsidePointCount == 1) {
-      // out_tri1.col = in_tri.col;
-      // out_tri2.col = in_tri.col;
+      out_tri1.col = in_tri.col;
+      out_tri2.col = in_tri.col;
 
-      out_tri1.col = Colors.red;
-      out_tri2.col = Colors.purple;
+      // out_tri1.col = Colors.red;
+      // out_tri2.col = Colors.purple;
 
       out_tri1.arr[0] = inside_points[0];
       out_tri1.arr[1] = inside_points[1];
@@ -334,7 +344,7 @@ class Renderer {
     int scalenum = (125 * lum).round();
 
     // with material gradients
-    int gradientnum = (lum.abs() * 9).round();
+    int gradientnum = (lum.abs() * 8).round();
     List<Color> colors = [
       Colors.green.shade900,
       Colors.green.shade800,
@@ -362,28 +372,29 @@ class Renderer {
 
     // List<ProjectedTriangle> trisToDraw = [];
     List<Triangle> trisToRaster = [];
+    Vec3D vForward = Vector_Mul(vLookDirection, 30.0 * time);
 
     if (inputs.moveUpwardButton == 1) {
       // move up
-      vCamera.y += 10.0 * time;
+      vCamera.y += 30.0 * time;
     }
 
     if (inputs.moveDownwardButton == 1) {
       // move down
-      vCamera.y -= 10.0 * time;
+      vCamera.y -= 30.0 * time;
     }
 
     if (inputs.strafeLeftButton == 1) {
       // strafe left
-      vCamera.x += 10.0 * time;
+      vCamera = Vector_Add(vCamera, Vec3D(vForward.z, vForward.y, -vForward.x));
+      // vCamera.x += 30.0 * time;
     }
 
     if (inputs.strafeRightButton == 1) {
       // strafe right
-      vCamera.x -= 10.0 * time;
+      vCamera = Vector_Sub(vCamera, Vec3D(vForward.z, vForward.y, -vForward.x));
+      // vCamera.x -= 30.0 * time;
     }
-
-    Vec3D vForward = Vector_Mul(vLookDirection, 8.0 * time);
 
     if (inputs.moveForwardButton == 1) {
       vCamera = Vector_Add(vCamera, vForward);
@@ -415,7 +426,7 @@ class Renderer {
     Mat4x4 matRotX = Matrix_MakeRotationX(theta * 0);
     Mat4x4 matRotY = Matrix_MakeRotationY(theta * 0);
 
-    Mat4x4 matTrans = Matrix_MakeTranslation(0.0, 2.0, zOffSet);
+    Mat4x4 matTrans = Matrix_MakeTranslation(400.0, 2.0, zOffSet);
 
     Mat4x4 matWorld = Matrix_MakeIdentity();
     matWorld = Matrix_MultiplyMatrix(matRotZ, matRotX);
@@ -424,9 +435,11 @@ class Renderer {
 
     Vec3D vUp = Vec3D(0, 1, 0);
     Vec3D vTarget = Vec3D(0, 0, 1);
-    Mat4x4 matCameraRot = Matrix_MakeRotationY(yaw);
-    matCameraRot =
-        Matrix_MultiplyMatrix(matCameraRot, Matrix_MakeRotationX(pitch));
+    Mat4x4 matCameraRot = Matrix_MultiplyMatrix(
+        Matrix_MakeRotationX(pitch), Matrix_MakeRotationY(yaw));
+    // matCameraRot =
+    //     Matrix_MultiplyMatrix(matCameraRot, Matrix_MakeRotationX(pitch));
+    print(yaw.toString());
     vLookDirection = Matrix_MultiplyVector(matCameraRot, vTarget);
     vTarget = Vector_Add(vCamera, vLookDirection);
 
@@ -456,7 +469,7 @@ class Renderer {
 
       if (Vector_DotProduct(normal, vCameraRay) < 0.0) {
         // illumination
-        Vec3D light_direction = Vec3D(0.0, 0.0, -1.0);
+        Vec3D light_direction = Vec3D(200.0, 1000.0, -20.0);
 
         double dp =
             min(max(0.1, Vector_DotProduct(light_direction, normal)), 1.0);
@@ -523,8 +536,83 @@ class Renderer {
         }
       }
     }
-    print(trisToRaster.length.toString());
-    return trisToRaster;
+
+    trisToRaster.sort((t1, t2) {
+      double z1 = (t1.arr[0].z + t1.arr[1].z + t1.arr[2].z) / 3.0;
+      double z2 = (t2.arr[0].z + t2.arr[1].z + t2.arr[2].z) / 3.0;
+      return z2.compareTo(z1);
+    });
+
+    List<Triangle> finalTris = [];
+
+    for (Triangle triToRaster in trisToRaster) {
+      List<Triangle> clipped = List<Triangle>.filled(2, Triangle.empty());
+      List<Triangle> listTriangles = [];
+      listTriangles.add(triToRaster);
+      int nNewTriangles = 1;
+
+      for (int p = 0; p < 4; p++) {
+        int nTrisToAdd = 0;
+        while (nNewTriangles > 0) {
+          Triangle test = listTriangles.first;
+          listTriangles.removeAt(0);
+          nNewTriangles--;
+
+          switch (p) {
+            case 0:
+              List<Triangle> l = Triangle_ClipAgainstPlane(Vec3D(0, 0, 0),
+                  Vec3D(0, 1, 0), test, Triangle.empty(), Triangle.empty());
+              nTrisToAdd = l.length;
+              for (int w = 0; w < nTrisToAdd; w++) {
+                listTriangles.add(l[w]);
+              }
+              break;
+            case 1:
+              List<Triangle> l = Triangle_ClipAgainstPlane(
+                  Vec3D(0, height - 1, 0),
+                  Vec3D(0, -1, 0),
+                  test,
+                  Triangle.empty(),
+                  Triangle.empty());
+              nTrisToAdd = l.length;
+              for (int w = 0; w < nTrisToAdd; w++) {
+                listTriangles.add(l[w]);
+              }
+              break;
+
+            case 2:
+              List<Triangle> l = Triangle_ClipAgainstPlane(Vec3D(0, 0, 0),
+                  Vec3D(1, 0, 0), test, Triangle.empty(), Triangle.empty());
+              nTrisToAdd = l.length;
+              for (int w = 0; w < nTrisToAdd; w++) {
+                listTriangles.add(l[w]);
+              }
+              break;
+
+            case 3:
+              List<Triangle> l = Triangle_ClipAgainstPlane(
+                  Vec3D(width - 1, 0, 0),
+                  Vec3D(-1, 0, 0),
+                  test,
+                  Triangle.empty(),
+                  Triangle.empty());
+              nTrisToAdd = l.length;
+              for (int w = 0; w < nTrisToAdd; w++) {
+                listTriangles.add(l[w]);
+              }
+              break;
+            default:
+          }
+        }
+        nNewTriangles = listTriangles.length;
+      }
+      for (Triangle tri in listTriangles) {
+        finalTris.add(tri);
+      }
+    }
+    print(finalTris.length.toString());
+
+    return finalTris;
   }
 }
 
@@ -611,12 +699,6 @@ class TrisPainter extends CustomPainter {
     final wireframePaint = Paint()
       ..color = Colors.black
       ..strokeWidth = 0.2;
-
-    trisToRaster.sort((t1, t2) {
-      double z1 = (t1.arr[0].z + t1.arr[1].z + t1.arr[2].z) / 3.0;
-      double z2 = (t2.arr[0].z + t2.arr[1].z + t2.arr[2].z) / 3.0;
-      return z2.compareTo(z1);
-    });
 
     for (Triangle tri in trisToRaster) {
       final paint = Paint()

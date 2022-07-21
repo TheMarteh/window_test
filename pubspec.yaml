@@ -62,7 +62,7 @@ flutter:
     - assets/teapot.obj
     - assets/teddybear.obj
     - assets/cow.obj
-    - assets/pumpkin.obj
+    - assets/testfile.obj
     - assets/axis.obj
     # - assets/
   #   - images/a_dot_burr.jpeg

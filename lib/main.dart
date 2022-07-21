@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
     'assets/cow.obj',
     'assets/axis.obj',
   ];
-  ObjConverter o = ObjConverter('assets/teddybear.obj');
+  ObjConverter o = ObjConverter('assets/testfile.obj');
 
   Stopwatch s = Stopwatch();
 
